@@ -39,7 +39,7 @@ data for 2,000 patients, with information on six variables.
 ```{r setup}
 # Install Libraries
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyr, dplyr, ggplot2, broom, )
+pacman::p_load(tidyr, dplyr, ggplot2, broom)
 
 # Load data
 load("../data/data_predict.rda")
