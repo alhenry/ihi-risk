@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Risk Prediction</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Albert Henry based on slides by L. Palla, D. Prieto, and E. Williamson" />
+    <meta name="date" content="2020-02-14" />
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle, inverse
+background-color: #1f2430
+
+
+
+
+
+# .yellow[Risk Prediction]
+
+### .yellow[Advanced Statistics for Records Research]
+
+### .yellow[Albert Henry]
+
+#### based on slides by L. Palla, D. Prieto, and E. Williamson
+
+
+&lt;br/&gt;&lt;br/&gt;
+
+### .yellow[UCL Institute of Health Informatics]
+
+#### .pink[14 Feb 2020] 💘
+
+---
+# Learning objectives
+
+- Describe the difference between __deterministic__ and __probabilistic__ methods for prediction
+
+- Create __2x2 contigency table__
+
+- Explain how __ROC curves__ are calculated and how they relate to __sensitivity__ and __specificity__
+
+- Understand key measures to evaluate __model performance__ 
+
+---
+# The problem
+
+.small[
+Consider individuals in which a certain __binary event Y__ might
+happen (0=no, 1=yes) by a certain point in time. 
+We also have a set of other variables for each individual.
+
+Some examples:
+- A group of patients about to have a surgery: Some will die in the surgery and some will survive. We have data on their age, sex , severity of disease, comorbidities etc.
+- A group of pregnant women: some will have a child with a malformation , some will not. We have data on the mothers ’ age , medications, diagnostics, life style, etc.
+- A group of patients who got a hip replacement, some will fail and some won’t, we have data on demographics, biomarkers and lifestyle.
+
+In all these cases we do not know for sure which individuals will get the event.
+]
+
+---
+# What we want to do
+Ideally we would like to predict who is __going to develop the event__. This can be done in two ways:
+- __Deterministic:__
+
+  **Classify** each individual in one of the two possible outcomes: develop the event or not.
+  This is often used in __(Supervised) Machine Learning__
+- __Probabilistic:__
+  
+  Assign each individual a **probability** of developing the event. ( This is often used in __Biostatistics__ and is known as **Risk Prediction**
+  
+Both strategies use data we collected for each individual (age, sex, diagnoses, etc.)
+
+---
+## Example
+__Who will develop myocardial infarction in the next 5 years?__
+
+Consider we have the following data
+
+&lt;table class="table table-hover table-striped" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; age &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; sex &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; diabet &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; SBP &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Classify &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Predict &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Observed &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 145 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 115 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 170 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 135 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 140 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+## Classify deterministically
+
+Use previous algorithm:
+
+`C(age, sex, diabet, SBP) = 0 or 1`
+
+&lt;table class="table table-hover table-striped" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; age &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; sex &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; diabet &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; SBP &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Classify &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Predict &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Observed &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 145 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 115 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 170 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 135 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 140 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+## Predict probabilistically
+
+Use previous algorithm:
+
+`P(age, sex, diabet, SBP) = [0, 1]`
+
+&lt;table class="table table-hover table-striped" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; age &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; sex &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; diabet &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; SBP &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Classify &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Predict &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Observed &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 145 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.15 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 115 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 170 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 135 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 140 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.52 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.40 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+---
+## Observe
+... after 5 years follow-up
+
+Compare predictions with observed events
+
+&lt;table class="table table-hover table-striped" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; age &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; sex &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; diabet &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; SBP &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Classify &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Predict &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Observed &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 145 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.15 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 115 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 170 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 135 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 65 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 140 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.52 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 75 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.40 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 130 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 160 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+## Model validation
+
+.large[
+* Our models have predicted some individuals well but not others
+
+* We want to have a general measure of how good or bad our algorithms are by
+__comparing the predictions with the actual observed values__.
+
+* This will be done differently for a classification algorithm than for a prediction
+algorithm.
+]
+
+---
+class: center
+
+### 2x2 Contigency table /  Confusion matrix
+
+&lt;img src="figure/ConfusionMatrix_meme.png" width="600px" /&gt;
+
+---
+## Sensitivity
+
+* a.k.a __True Positive Rate__, __Recall__
+
+* Probability of __correctly predicting the event__
+
+* Given you are someone who will __have the event__, what is the probability of a __positive classification__?
+
+&lt;br/&gt;
+
+.pull-left[
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;background-color: #98FB98 !important;"&gt; TP &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;"&gt; FP &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;background-color: #98FB98 !important;"&gt; FN &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;"&gt; TN &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.pull-right[
+
+.small[
+`$${Sensitivity}=\frac{\sum{True~Positive}}{\sum{Observed~Positive}}$$`
+`$${Sensitivity}=\frac{TP}{TP + FN}$$`
+]
+]
+
+---
+## Specificity
+
+* a.k.a __True Negative Rate__
+
+* Probability of __correctly predicting the__ ___non-___
+__event__
+
+* Given you are someone who will ___not___ __have the event__, what is the probability of a __negative classification__?
+
+&lt;br/&gt;
+
+.pull-left[
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;"&gt; TP &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;background-color: #98FB98 !important;"&gt; FP &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;"&gt; FN &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;background-color: #98FB98 !important;"&gt; TN &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.pull-right[
+
+.small[
+`$${Specificity}=\frac{\sum{True~Negative}}{\sum{Observed~Negative}}$$`
+`$${Specificity}=\frac{TN}{TN + FP}$$`
+]
+]
+
+---
+## Positive predictive value (PPV)
+
+* Probability of __having the event__ given a __positive classification__
+
+* __Positively correlated__ with __disease prevalence__
+
+&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;
+
+.pull-left[
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;background-color: #98FB98 !important;font-weight: bold;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;background-color: #98FB98 !important;"&gt; TP &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;background-color: #98FB98 !important;"&gt; FP &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;"&gt; FN &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;"&gt; TN &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.pull-right[
+
+.small[
+`$${PPV}=\frac{\sum{True~Positive}}{\sum{Predicted~Positive}}$$`
+`$${PPV}=\frac{TP}{TP + FP}$$`
+]
+]
+
+---
+## Negative predictive value (NPV)
+
+* Probability of ___not___ __having the event__ given a __negative classification__
+
+* __Negatively correlated__ with __disease prevalence__
+
+&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;
+.pull-left[
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;"&gt; TP &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;"&gt; FP &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;background-color: #98FB98 !important;font-weight: bold;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;background-color: #98FB98 !important;"&gt; FN &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; color: #0f4c81 !important;background-color: #fafafa !important;background-color: #98FB98 !important;"&gt; TN &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.pull-right[
+
+.small[
+`$${NPV}=\frac{\sum{True~Negative}}{\sum{Predicted~Negative}}$$`
+`$${NPV}=\frac{TN}{TN + FN}$$`
+]
+]
+---
+### Comparing _classifications_ with observations
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Total &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 10 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+.large[
+.pull-left[
+Sensitivity __= ?__
+
+Specificity __= ?__
+]
+
+.pull-right[
+PPV __= ?__
+
+NPV __= ?__
+]
+]
+
+---
+### Comparing _classifications_ with observations
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Total &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 10 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+.large[
+.pull-left[
+Sensitivity __= 3/4 = 0.75__
+
+Specificity __= 4/6 = 0.67__
+]
+
+.pull-right[
+PPV __= 3/5 = 0.6__
+
+NPV __= 4/5 = 0.8__
+]
+]
+---
+### Comparing _predictions_ with observations
+
+.small[
+
+Order by risk and choose a __cut-off point__ to classify as "Yes", e.g.
+
+__"Yes" if probability (P) &gt; 0.1__
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Predict &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Observed &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Prob &amp;gt;0.1 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.15 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.40 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.52 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+
+---
+### Cut-off point: _Yes_ if P &gt; 0.1
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Total &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 10 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+.large[
+.pull-left[
+Sensitivity __= 4/4 = 1__
+
+Specificity __= 2/6 = 0.33__
+]
+
+.pull-right[
+PPV __= 4/8 = 0.5__
+
+NPV __= 2/2 = 1__
+]
+
+]
+
+&lt;br/&gt;&lt;br/&gt;
+
+Higher sensitivity, lower specificity than the classification algorithm
+---
+### Cut-off point: _Yes_ if P &gt; 0.4
+
+.small[
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Predict &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Observed &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Prob &amp;gt;0.4 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.15 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.40 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.52 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+
+---
+### Cut-off point: _Yes_ if P &gt; 0.4
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Total &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 10 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+.large[
+.pull-left[
+Sensitivity __= 3/4 = 0.75__
+
+Specificity __= 4/6 = 0.67__
+]
+
+.pull-right[
+PPV __= 3/5 = 0.6__
+
+NPV __= 4/5 = 0.8__
+]
+
+]
+
+&lt;br/&gt;&lt;br/&gt;
+
+Same contigency table as the classification algorithm
+
+---
+### Cut-off point: _Yes_ if P &gt; 0.55
+
+.small[
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Predict &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Observed &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Prob &amp;gt;0.55 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.15 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.40 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.52 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: red !important;"&gt;No&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="     color: green !important;"&gt;Yes&lt;/span&gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+---
+### Cut-off point: _Yes_ if P &gt; 0.55
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden; padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden" colspan="1"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Total &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;font-weight: bold;color: #0f4c81 !important;background-color: #f0f0f0 !important;"&gt; 10 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+.large[
+.pull-left[
+Sensitivity __= 2/4 = 0.5__
+
+Specificity __= 6/6 = 1__
+]
+
+.pull-right[
+PPV __= 2/2 = 1__
+
+NPV __= 6/8 = 0.75__
+]
+
+]
+
+&lt;br/&gt;&lt;br/&gt;
+
+Lower sensitivity, higher specificity than the classification algorithm
+---
+## All cut-off points
+
+.small[
+If we repeat this process for each probability value,
+we can obtain a list of sensitivity and specificity values
+
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Predict &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Observed &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Cut-off &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Sensitivity &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Specificity &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.17 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.33 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.15 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.15 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.40 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.67 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.52 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.83 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.55 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.55 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; P &amp;gt;0.6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+]
+---
+### .small[Receiver Operating Characterictic (ROC) Curve]
+
+
+.small[A curve linking all the sensitivity against the specificity values]
+
+.left-column[
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; Sens &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Spec &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.17 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.33 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.67 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.83 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.right-column[
+&lt;img src="RiskPrediction_slides_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
+]
+
+---
+### .small[Area Under the [ROC] Curve (AUC / AUROC)]
+
+What is the AUC?
+
+
+&lt;img src="RiskPrediction_slides_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+
+---
+### .small[Area Under the [ROC] Curve (AUC / AUROC)]
+
+What is the AUC?
+
+Sample calculation with [yardstick package](https://github.com/tidymodels/yardstick) in R
+
+
+```r
+# df = the dataset shown in previous slides
+roc &lt;- yardstick::roc_auc(df, truth = Observed, Predict)
+roc
+```
+
+```
+## # A tibble: 1 x 3
+##   .metric .estimator .estimate
+##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+## 1 roc_auc binary         0.854
+```
+
+__AUC = 0.8541667__
+
+---
+### .small[AUC and the distributions of predictors in the two outcome groups at different cut-off values]
+
+![](https://github.com/dariyasydykova/open_projects/blob/master/ROC_animation/animations/cutoff.gif?raw=true)
+
+.footnote[by Dariya Sydykova ([follow link for more info](https://github.com/dariyasydykova/open_projects/tree/master/ROC_animation))]
+
+
+---
+### AUC as a measure of model discrimination
+
+![](https://github.com/dariyasydykova/open_projects/blob/master/ROC_animation/animations/ROC.gif?raw=true)
+
+.footnote[by Dariya Sydykova ([follow link for more info](https://github.com/dariyasydykova/open_projects/tree/master/ROC_animation))]
+---
+### What does AUC tell us?
+
+* AUC can be interpreted as the __probability that an observed “yes ” was assigned a higher probability than an observed “no”__
+
+* If the model was __useless__ (same as assigning probabilities “at random”),
+then an observed “yes” would have only 50% chances of having higher predicted risk than an observed “no” (__AUC = 0.5__)
+
+* __AUC = 1__ for a model that would give higher predictions to all the
+observed “yes” than to all the observed “no ” (__perfect separation__ between “yes” and “no”).
+
+* Any real world model will have __AUC between 0.5 and 1__. Closer to 1 indicates better performance in separating "yes" and "no".
+
+* For binary classification, AUC is equal to __concordance (C) statistic__
+
+---
+### How do we come up with predictions?
+
+* We propose a statistical model for the __probability of the event happening__
+`\(P\left(Y_{i}=1\right)\)` depending on the other variables 
+
+* For example a __logistic model__:
+
+`$$\log \left(\frac{P\left(Y_{i}=1\right)}{1-P\left(Y_{i}=1\right)}\right)=\beta_{0}+\beta_{1} X_{i}+\beta_{2} Z_{i}+\cdots \tag{1}$$`
+
+* We need a __training set__ where we can observe all the variables `\(Y_{i}, X_{i}, Z_{i}, \ldots\)`
+to estimate the __coefficients__ `\(\beta_{0}, \beta_{1}, \beta_{2}, \dots\)`
+
+* Once we have the coefficients that best fit the data we can __calculate the predicted risk for each individual__ `\(i\)`
+
+`$$\widehat{P}\left(Y_{i}=1\right)=\frac{e^{\widehat{\beta}_{0}+\widehat{\beta}_{1} X_{i}+\widehat{\beta}_{2} Z_{i}+\cdots}}{1+e^{\widehat{\beta}_{0}+\hat{\beta}_{1} X_{i}+\hat{\beta}_{2} Z_{i}+\cdots}} \tag{2}$$`
+
+---
+.small[
+### Model validation
+
+#### Internal validation
+
+* The validity of claims for the underlying __population that the data originated from__ __(reproducibility)__
+
+* __Split sample validation__: split dataset randomly into __training__ (for model development) and __test__ set (for validation)
+&lt;br/&gt;👉 __.red[today's practical]__
+
+* Other methods: __cross validation__ and __bootstrap__ resampling
+
+#### External validation
+* Generalizability of claims to __‘plausibly related’ populations__ not included in the initial study population __(transportability)__
+
+* e.g. __temporal__ or __geographical__ validation
+
+.footnote[[Steyerberg EW, Vergouwe Y (2014)](https://doi.org/10.1093/eurheartj/ehu207)]
+]
+
+---
+### A larger example with 2000 individuals
+
+We will use the variables `Age, Sex, SBP, and BMI` to predict if the person will be `Dead = 0` or `Alive = 1` in 5 years time
+
+&lt;img src="figure/stata_data.png" width="668" height="400px" /&gt;
+---
+### Model _M1_: Logistic regression
+
+Stata command:
+
+`logistic dead age sex sbp bmi`
+
+&lt;img src="figure/stata_logReg.png" width="100%" /&gt;
+
+Note that BMI is not statistically significant (`P = 0.185`) but let's stay with this model for now
+
+---
+### Make predictions from Model _M1_
+
+Create variable: __logit of the probability of death__ - __equation (1)__
+
+`predict m1lp, xb`
+
+Create variable: __predicted probability of death__ - __equation (2)__
+
+`predict m1lp`
+
+&lt;img src="figure/stata_logReg_predict.png" width="100%" /&gt;
+
+---
+#### Predicted probability of death in __`dead`__ and __`alive`__ group
+
+![:scale 90%](figure/stata_boxPlot_1.png)
+
+
+---
+## Model calibration
+
+Evaluate __goodness of fit__ with __Hosmer-Lemeshow test__
+
+`estat gof, group(10) table`
+
+![](figure/stata_gof.png)
+
+---
+## Model calibration
+
+__Goodness of fit__: Observed and expected events by deciles of risk
+
+.center[![:scale 60%](figure/stata_gof_decile.png)]
+
+--
+.smaller[__.red[Note:]__ Hosmer-Lemeshow test can not tell the direction of micalibration and relies on arbitrary grouping (see [Steyerberg EW, Vergouwe Y (2014)](https://doi.org/10.1093/eurheartj/ehu207) for discussion on the limitations and suggested alternatives)]
+
+---
+### Contingency table: cut-off `\(P(Y = 1) \geq 0.3\)`
+
+`estat classification, cutoff(0.3)`
+
+&lt;img src="figure/stata_classify.png" width="947" height="100%" /&gt;
+
+---
+### ROC curve from model _M1_
+
+.center[
+![:scale 60%](figure/stata_roc_1.png)
+
+__`AUC = 0.78`__
+]
+
+There is a 78% probability that a person that actually
+dies gets a higher predicted risk by the model than a person
+that did not die by the end of the follow up
+---
+.small[
+### Sensitivity and Specificity for model _M1_ &lt;br/&gt; by cut-off value
+
+.center[![:scale 65%](figure/stata_sensSpec_1.png)]
+
+Plotting __sensitivity and specificity against cut-off value__ can help to
+select the most appropriate cut-off
+
+In practice, this trade-off often needs to be decided on a __case-by-case__ basis
+
+]
+
+---
+## For discussion
+
+Consider the following scenarios:
+
+* Screening for diabetes &amp; pre-diabetes
+
+* Diagnosing coeliac disease
+
+* Screening suspect for coronavirus infection COVID-2019
+
+&lt;br/&gt;
+Which model would you choose:
+
+1. High-sensitivity, low-specificity
+
+2. Low-sensitivity, high-specificity
+
+---
+#### Key measures to evaluate __model performance__
+
+__Calibration__
+* The agreement between the predicted &amp; observed outcomes
+* For a group of patients with 10% predicted risk, do 10% experience the event?
+* e.g. Goodness of fit test
+
+__Discrimination__
+* The ability of the model to distinguish between "event" and "non-event"
+* e.g. AUC / C statistic
+
+__Clinical usefulness__
+* Does the model provide accurate predictions at the patient level that can be used to guide clinical decision making?
+* e.g. [Decision curve analysis](http://www.decisioncurveanalysis.org/)
+
+---
+## Summary
+
+* Prediction modelling can be broadly categorised into __deterministic__ and __probabilistic__ methods
+
+* __2 x 2 contigency table / confusion matrix__ is useful as a first step to evaluate model performance
+
+* __AUC__ is a useful measure of the model __discrimination__
+
+* Comparing observed and predicted risks is useful for model __calibration__
+
+* Assessing __clinical usefulness__ requires other approaches and often requires insights from ___beyond the data___
+
+---
+## References and further reading
+
+* [Steyerberg EW, Vergouwe Y. Towards better clinical prediction models: seven steps for development and an ABCD for validation. Eur Heart J. 2014 Aug 1;35(29):1925–1931.](https://academic.oup.com/eurheartj/article/35/29/1925/2293109)
+
+* Comparison with machine learning:&lt;br/&gt;[Breiman L. Statistical Modeling: The Two Cultures (with comments and a rejoinder by the author). Stat Sci. Institute of Mathematical Statistics; 2001 Aug;16(3):199–231.](https://projecteuclid.org/euclid.ss/1009213726)
+
+* [ROC curve animation by Dariya Sydykova](https://github.com/dariyasydykova/open_projects/tree/master/ROC_animation)
+
+* [A Twitter thread on AUC by Cecile Janssens](https://twitter.com/cecilejanssens/status/1104134423673479169?lang=en)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
