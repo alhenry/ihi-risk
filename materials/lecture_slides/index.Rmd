@@ -18,7 +18,7 @@ class: center, middle, inverse
 background-color: #1f2430
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(fig.retina = 3)
+knitr::opts_chunk$set(fig.retina = 3, message = F, warning = F)
 ```
 
 ```{r xaringan-themer, include = FALSE}
