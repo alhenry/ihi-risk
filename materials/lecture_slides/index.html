@@ -4,7 +4,6 @@
     <title>Risk Prediction</title>
     <meta charset="utf-8" />
     <meta name="author" content="Albert Henry based on slides by L. Palla, D. Prieto, and E. Williamson" />
-    <meta name="date" content="2020-02-14" />
     <script src="libs/kePrint/kePrint.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -20,18 +19,20 @@ background-color: #1f2430
 
 # .yellow[Risk Prediction]
 
-### .yellow[Advanced Statistics for Records Research]
+### .yellow[Advanced Statistical Analysis]
 
 ### .yellow[Albert Henry]
 
 #### based on slides by L. Palla, D. Prieto, and E. Williamson
 
 
-&lt;br/&gt;&lt;br/&gt;
+&lt;br/&gt;
 
 ### .yellow[UCL Institute of Health Informatics]
 
-#### .pink[14 Feb 2020] 💘
+these slides are available online at:
+
+.accent[https://ihi-risk-teaching.netlify.app/]
 
 ---
 # Learning objectives
@@ -53,9 +54,9 @@ happen (0=no, 1=yes) by a certain point in time.
 We also have a set of other variables for each individual.
 
 Some examples:
-- A group of patients about to have a surgery: Some will die in the surgery and some will survive. We have data on their age, sex , severity of disease, comorbidities etc.
-- A group of pregnant women: some will have a child with a malformation , some will not. We have data on the mothers ’ age , medications, diagnostics, life style, etc.
-- A group of patients who got a hip replacement, some will fail and some won’t, we have data on demographics, biomarkers and lifestyle.
+- A group of patients about to have a surgery: Some will __develop complications after the surgery__ and some will not. We have data on their age, sex , severity of disease, comorbidities etc.
+
+- A group of pregnant women: some will __have a child with a malformation__ , some will not. We have data on the mothers ’ age , medications, diagnostics, life style, etc.
 
 In all these cases we do not know for sure which individuals will get the event.
 ]
@@ -884,6 +885,20 @@ Order by risk and choose a __cut-off point__ to classify as "Yes", e.g.
 
 __"Yes" if probability (P) &gt; 0.1__
 
+
+```
+## 
+## Attaching package: 'rlang'
+```
+
+```
+## The following objects are masked from 'package:purrr':
+## 
+##     %@%, as_function, flatten, flatten_chr, flatten_dbl, flatten_int,
+##     flatten_lgl, flatten_raw, invoke, list_along, modify, prepend,
+##     splice
+```
+
 &lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
  &lt;thead&gt;
   &lt;tr&gt;
@@ -1456,7 +1471,7 @@ we can obtain a list of sensitivity and specificity values
 ]
 
 .right-column[
-&lt;img src="index_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
+&lt;img src="RiskPrediction_slides_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -1465,7 +1480,7 @@ we can obtain a list of sensitivity and specificity values
 What is the AUC?
 
 
-&lt;img src="index_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+&lt;img src="RiskPrediction_slides_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
 
 ---
 ### .small[Area Under the [ROC] Curve (AUC / AUROC)]
