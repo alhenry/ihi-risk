@@ -1,6 +1,6 @@
 ---
-title: "Practical session 7: RISK PREDICTION"
-subtitle: "Advanced Statistics for Records Research"
+title: "Practical: RISK PREDICTION"
+subtitle: "Advanced Statistical Analysis"
 output: html_document
 ---
 

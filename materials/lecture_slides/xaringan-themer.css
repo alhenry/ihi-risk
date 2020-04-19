@@ -67,7 +67,7 @@ h1, h2, h3 {
 }
 strong{color:#0f4c81;}
 a, a > code {
-  color: #0f4c81;
+  color: deeppink;
   text-decoration: none;
 }
 .footnote {
