@@ -815,7 +815,7 @@ Create variable: __logit of the probability of death__ - __equation (1)__
 
 Create variable: __predicted probability of death__ - __equation (2)__
 
-`predict m1lp`
+`predict m1pr`
 
 ```{r, echo=F, out.width="100%"}
 knitr::include_graphics("figure/stata_logReg_predict.png")
