@@ -788,7 +788,7 @@ $$\widehat{P}\left(Y_{i}=1\right)=\frac{e^{\widehat{\beta}_{0}+\widehat{\beta}_{
 ---
 ### A larger example with 2000 individuals
 
-We will use the variables `Age, Sex, SBP, and BMI` to predict if the person will be `Dead = 0` or `Alive = 1` in 5 years time
+We will use the variables `Age, Sex, SBP, and BMI` to predict if the person will be dead (`Death = 1`) or alive (`Death= 0`) in 5 years time
 
 ```{r, echo=F, out.height="400px"}
 knitr::include_graphics("figure/stata_data.png")
