@@ -2,8 +2,6 @@
 
 Repository for IHI Risk prediction teaching.
 
-Last update: 14 Feb 2020  :cupid:
-
 Azure notebook link to download materials for lecture & practical:
 
 https://notebooks.azure.com/albert-henry-16/projects/ihi-risk
