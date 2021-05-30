@@ -327,7 +327,10 @@ tibble(
   column_spec(1, bold = T, background = "#f0f0f0", color = black)
 ```
 ]
+]
 
+--
+.small[
 <br/>
 With 2 x 2 contigency table, we can calculate several useful metrices* to evaluate model performance, including:
 * sensitivity, recall, hit rate, or true positive rate (TPR)
