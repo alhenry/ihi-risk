@@ -589,14 +589,218 @@ Suppose we have a pre-calculated probabilitic prediction model `P`:
 * The goal of model validation is to evaluate model performance by
 __comparing predictions against observed values__.
 
-* A common first step for binary prediction model validation is creating a 2x2 contigency table / confusion matrix consisting all four possible __pairs of predicted-observed values__
+* For binary prediction, model validation usually starts with creating a 2x2 contigency table / confusion matrix consisting all four possible __pairs of predicted-observed values__
 ]
 
 ---
-class: center
+### 2x2 Contigency table /  Confusion matrix
+.pull-left[
+&lt;table class="table table-hover table-striped" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; id &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Observed &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
 
+--
+.pull-right[
+&lt;table class="table table-hover table-striped" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Observed &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Count &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;br/&gt;
+
+&lt;table class="table table-hover table-striped" style="font-size: 20px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Observed &lt;/th&gt;
+   &lt;th style="text-align:center;background-color: #bbbbbb !important;"&gt; Term &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; True Positive &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; False Positive &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; False Negative &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #0f4c81 !important;"&gt; True Negative &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+---
 ### 2x2 Contigency table /  Confusion matrix
 
+.small[
+.pull-left[
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.pull-right[
+&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Observed&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:center;"&gt; Predicted &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; + &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; - &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; + &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; True Positive &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; False Negative &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:center;font-weight: bold;color: #101010 !important;background-color: #f0f0f0 !important;"&gt; - &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; False Positive &lt;/td&gt;
+   &lt;td style="text-align:center;width: 4cm; background-color: #fafafa !important;"&gt; Ture Negative &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+&lt;br/&gt;
+With 2 x 2 contigency table, we can calculate several useful metrices* to evaluate model performance, including:
+* sensitivity, recall, hit rate, or true positive rate (TPR)
+* specificity, selectivity or true negative rate (TNR)
+* precision or positive predictive value (PPV)
+* negative predictive value (NPV)
+&lt;br/&gt;
+]
+
+.smaller[
+*for a full list, refer to [Wikipedia entry for Confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix)
+]
+
+---
 &lt;img src="figure/ConfusionMatrix_meme.png" width="600px" /&gt;
 
 ---
@@ -649,7 +853,7 @@ class: center
 ---
 ## Specificity
 
-* a.k.a __True Negative Rate__
+* a.k.a __Selectivity__, __True Negative Rate__
 
 * Probability of __correctly predicting the__ ___non-___
 __event__
@@ -1470,7 +1674,7 @@ we can obtain a list of sensitivity and specificity values
 ]
 
 .right-column[
-&lt;img src="index_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" width="100%" /&gt;
 ]
 
 ---
@@ -1479,7 +1683,7 @@ we can obtain a list of sensitivity and specificity values
 What is the AUC?
 
 
-&lt;img src="index_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" width="100%" /&gt;
 
 ---
 ### .small[Area Under the [ROC] Curve (AUC / AUROC)]

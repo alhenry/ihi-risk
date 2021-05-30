@@ -203,9 +203,9 @@ df %>%
 
 ```
 ---
-## Probabilitic prediction
+## Probabilistic prediction
 
-Suppose we have a pre-calculated probabilitic prediction model `P`:
+Suppose we have a pre-calculated probabilistic prediction model `P`:
 
 `P(age, sex, diabet, SBP) = [0, 1]`
 
@@ -244,14 +244,104 @@ df %>%
 * The goal of model validation is to evaluate model performance by
 __comparing predictions against observed values__.
 
-* A common first step for binary prediction model validation is creating a 2x2 contigency table / confusion matrix consisting all four possible __pairs of predicted-observed values__
+* For binary prediction, model validation usually starts with creating a 2x2 contigency table / confusion matrix consisting all four possible __pairs of predicted-observed values__
 ]
 
 ---
-class: center
+### 2x2 Contigency table /  Confusion matrix
+.pull-left[
+```{r, echo=FALSE}
+df %>%
+  select(id, Predicted = Classify, Observed) %>% 
+  kable(align = "c") %>%
+  kable_styling(bootstrap_options = c("hover", "striped"),
+                full_width = T, font_size = 20) %>% 
+  row_spec(0, background = "#bbbbbb")
+```
+]
 
+--
+.pull-right[
+```{r, echo=FALSE}
+df %>%
+  select(Predicted = Classify, Observed) %>%
+  group_by(Predicted, Observed) %>%
+  tally(name = "Count") %>% 
+  kable(align = "c") %>%
+  kable_styling(bootstrap_options = c("hover", "striped"),
+                full_width = T, font_size = 20) %>% 
+  row_spec(0, background = "#bbbbbb")
+```
+
+<br/>
+
+```{r, echo=FALSE}
+tibble(Predicted = c("+", "+", "-", "-"),
+       Observed = c("+", "-", "+", "-"),
+       Term = c("True Positive", "False Positive",
+                "False Negative", "True Negative")) %>% 
+  kable(align = "c") %>%
+  kable_styling(bootstrap_options = c("hover", "striped"),
+                full_width = T, font_size = 20) %>% 
+  row_spec(0, background = "#bbbbbb") %>% 
+  column_spec(3, color = accent, bold = T)
+```
+]
+
+---
 ### 2x2 Contigency table /  Confusion matrix
 
+.small[
+.pull-left[
+```{r, echo=FALSE}
+tab <- with(df, table(Classify, Observed))
+tibble(
+  Predicted = c("+", "-"),
+  `+` = tab[,1],
+  `-` = tab[,2]
+  ) %>% 
+  kable(align = "c") %>%
+  kable_styling() %>% 
+  add_header_above(c("", "Observed" = 2)) %>% 
+  column_spec(2:3, background = white, width = "4cm") %>% 
+#   column_spec(4, background = "#f0f0f0", color = accent, bold = T) %>% 
+#   row_spec(3, background = "#f0f0f0", color = accent, bold = T) %>%
+  column_spec(1, bold = T, background = "#f0f0f0", color = black)
+```
+]
+
+.pull-right[
+```{r, echo=FALSE}
+tab <- with(df, table(Classify, Observed))
+tibble(
+  Predicted = c("+", "-"),
+  `+` = c("True Positive", "False Positive"),
+  `-` =  c("False Negative", "Ture Negative")
+  ) %>% 
+  kable(align = "c") %>%
+  kable_styling() %>% 
+  add_header_above(c("", "Observed" = 2)) %>% 
+  column_spec(2:3, background = white, width = "4cm") %>% 
+#   column_spec(4, background = "#f0f0f0", color = accent, bold = T) %>% 
+#   row_spec(3, background = "#f0f0f0", color = accent, bold = T) %>%
+  column_spec(1, bold = T, background = "#f0f0f0", color = black)
+```
+]
+
+<br/>
+With 2 x 2 contigency table, we can calculate several useful metrices* to evaluate model performance, including:
+* sensitivity, recall, hit rate, or true positive rate (TPR)
+* specificity, selectivity or true negative rate (TNR)
+* precision or positive predictive value (PPV)
+* negative predictive value (NPV)
+<br/>
+]
+
+.smaller[
+*for a full list, refer to [Wikipedia entry for Confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix)
+]
+
+---
 ```{r, echo=F, out.width="600px"}
 knitr::include_graphics("figure/ConfusionMatrix_meme.png")
 ```
@@ -296,7 +386,7 @@ $${Sensitivity}=\frac{TP}{TP + FN}$$
 ---
 ## Specificity
 
-* a.k.a __True Negative Rate__
+* a.k.a __Selectivity__, __True Negative Rate__
 
 * Probability of __correctly predicting the__ ___non-___
 __event__
