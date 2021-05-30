@@ -342,11 +342,6 @@ With 2 x 2 contigency table, we can calculate several useful metrices* to evalua
 ]
 
 ---
-```{r, echo=F, out.width="600px"}
-knitr::include_graphics("figure/ConfusionMatrix_meme.png")
-```
-
----
 ## Sensitivity
 
 * a.k.a __True Positive Rate__, __Recall__
