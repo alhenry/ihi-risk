@@ -13,10 +13,9 @@ model <- glm(formula = dead ~ age + sex + sbp + bmi,
 df_model <- model %>%
   # augment creates new columns with some useful information from the model
   # .fitted = predicted values
-  augment(type.predict = "response") %>%  
+  augment(type.predict = "link") %>%  
   mutate(dead_count = as.numeric(dead) - 1) %>% 
-  arrange(.fitted) %>% 
-  mutate(decile = ntile(.fitted, 10))
+  arrange(.fitted)
 
 # calculate alpha (calibration at large) & beta (calibration slope)
 # alpha is calculated by constraining beta to 1
@@ -35,7 +34,13 @@ df_alpha <- glm(dead_count ~ offset(.fitted),
          conf.high = estimate + qnorm(0.975) * std.error)
 
 # calculate mean predicted results per decile
-df_sum_decile <- df_model %>% 
+df_sum_decile <- model %>%
+  # augment creates new columns with some useful information from the model
+  # .fitted = predicted values
+  augment(type.predict = "response") %>%  
+  mutate(dead_count = as.numeric(dead) - 1) %>% 
+  arrange(.fitted) %>% 
+  mutate(decile = ntile(.fitted, 10)) %>% 
   group_by(decile) %>% 
   summarize(mean_prediction = mean(.fitted), 
             sd_prediction = sd(.fitted),
@@ -46,7 +51,7 @@ df_sum_decile <- df_model %>%
 ggplot(df_sum_decile, aes(x = mean_prediction, y = prop_observed)) +
   theme_minimal() +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-  geom_abline(slope = 1, intercept = df_alpha$estimate[1], color = "#1b5299") +
+  # geom_abline(slope = 1, intercept = df_alpha$estimate[1], color = "#1b5299") +
   geom_point(aes(color = dummy)) +
   scale_color_manual(values = "steelblue") +
   labs(x = "Mean Predicted", y = "Mean Observed", title = "Calibration plot") +

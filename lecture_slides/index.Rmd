@@ -832,15 +832,9 @@ __AUC = `r roc$.estimate`__
 ---
 ### What does AUC tell us?
 
-* AUC can be interpreted as the __probability that an observed “yes ” was assigned a higher probability than an observed “no”__
+* AUC estimates the __probability that a randomly chosen observed “yes” was assigned a higher probability than a randomly observed “no”__ by the model
 
-* If the model was __useless__ (same as assigning probabilities “at random”),
-then an observed “yes” would have only 50% chances of having higher predicted risk than an observed “no” (__AUC = 0.5__)
-
-* __AUC = 1__ for a model that would give higher predictions to all the
-observed “yes” than to all the observed “no ” (__perfect separation__ between “yes” and “no”).
-
-* Any real world model will have __AUC between 0.5 and 1__. Closer to 1 indicates better performance in separating "yes" and "no".
+* Real world models will have __AUC from 0.5 to 1__. A value closer to 1 indicates better performance in separating "yes" and "no".
 
 * For binary classification, AUC is equal to __concordance (C) statistic__
 
@@ -870,7 +864,6 @@ $$\widehat{P}\left(Y_{i}=1\right)=\frac{e^{\widehat{\beta}_{0}+\widehat{\beta}_{
 * The validity of claims for the underlying __population that the data originated from__ __(reproducibility)__
 
 * __Split sample validation__: split dataset randomly into __training__ (for model development) and __test__ set (for validation)
-<br/>👉 __.red[today's practical]__
 
 * Other methods: __cross validation__ and __bootstrap__ resampling
 
@@ -941,8 +934,16 @@ __Goodness of fit__: Observed and expected events by deciles of risk
 .center[![:scale 60%](figure/stata_gof_decile.png)]
 
 --
-.smaller[__.red[Note:]__ Hosmer-Lemeshow test can not tell the direction of micalibration and relies on arbitrary grouping (see [Steyerberg EW, Vergouwe Y (2014)](https://doi.org/10.1093/eurheartj/ehu207) for discussion on the limitations and suggested alternatives)]
+.small[__.red[Limitation:]__ Hosmer-Lemeshow test can not tell the direction of micalibration and relies on arbitrary grouping]
 
+---
+## Model calibration
+
+Model calibration with calibration plot
+
+.center[![:scale 80%](figure/calibration_plot.png)]
+
+(see [Steyerberg EW, Vergouwe Y (2014)](https://doi.org/10.1093/eurheartj/ehu207) for discussion on the limitations and suggested alternatives)
 ---
 ### Contingency table: cut-off $P(Y = 1) \geq 0.3$
 
@@ -976,24 +977,6 @@ select the most appropriate cut-off
 In practice, this trade-off often needs to be decided on a __case-by-case__ basis
 
 ]
-
----
-## For discussion
-
-Consider the following scenarios:
-
-* Screening for diabetes & pre-diabetes
-
-* Diagnosing coeliac disease
-
-* Screening suspect for coronavirus infection COVID-2019
-
-<br/>
-Which model would you choose:
-
-1. High-sensitivity, low-specificity
-
-2. Low-sensitivity, high-specificity
 
 ---
 #### Key measures to evaluate __model performance__
