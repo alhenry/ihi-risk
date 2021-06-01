@@ -857,7 +857,7 @@ $$\widehat{P}\left(Y_{i}=1\right)=\frac{e^{\widehat{\beta}_{0}+\widehat{\beta}_{
 
 ---
 .small[
-### Model validation
+### Dataset for model development & model validation
 
 #### Internal validation
 
