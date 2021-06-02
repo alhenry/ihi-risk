@@ -13,7 +13,7 @@ model <- glm(formula = dead ~ age + sex + sbp + bmi,
 df_model <- model %>%
   # augment creates new columns with some useful information from the model
   # .fitted = predicted values
-  augment(type.predict = "link") %>%  
+  augment(type.predict = "response") %>%  
   mutate(dead_count = as.numeric(dead) - 1) %>% 
   arrange(.fitted)
 
@@ -63,6 +63,6 @@ ggplot(df_sum_decile, aes(x = mean_prediction, y = prop_observed)) +
                          round(df_beta$estimate[2], 2))) +
   theme(legend.title = element_blank())
 
-ggsave("lecture_slides/figure/calibration_plot.png")
+ggsave("lecture_slides/figure/calibration_plot.png", scale = 0.8)
 
 

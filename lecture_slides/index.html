@@ -1821,13 +1821,17 @@ __Goodness of fit__: Observed and expected events by deciles of risk
 .small[__.red[Limitation:]__ Hosmer-Lemeshow test can not tell the direction of micalibration and relies on arbitrary grouping]
 
 ---
-## Model calibration
+### Model calibration with calibration plot
 
-Model calibration with calibration plot
+.smaller[
+- __Calibration in the large__: compares average predicted risk with observed risk (__0__: ideal, __&lt;0__: underestimation, __&gt;0__: overestimation)
 
-.center[![:scale 80%](figure/calibration_plot.png)]
+- __Calibration slope__: evaluate spread of estimated risk (__1__: ideal, __&lt;1__: too extreme, __&gt;1__: too moderate)
 
-(see [Steyerberg EW, Vergouwe Y (2014)](https://doi.org/10.1093/eurheartj/ehu207) for discussion on the limitations and suggested alternatives)
+.center[![:scale 90%](figure/calibration_plot.png)]
+
+Further discussion: [Steyerberg EW, Vergouwe Y (2014)](https://doi.org/10.1093/eurheartj/ehu207) and [Calster BV _et al._ (2019)](https://bmcmedicine.biomedcentral.com/articles/10.1186/s12916-019-1466-7)
+]
 ---
 ### Contingency table: cut-off `\(P(Y = 1) \geq 0.3\)`
 
