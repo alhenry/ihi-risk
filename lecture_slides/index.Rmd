@@ -934,7 +934,7 @@ __Goodness of fit__: Observed and expected events by deciles of risk
 .center[![:scale 60%](figure/stata_gof_decile.png)]
 
 --
-.small[__.red[Limitation:]__ Hosmer-Lemeshow test can not tell the direction of micalibration and relies on arbitrary grouping]
+.small[__.red[Limitation:]__ Hosmer-Lemeshow test can not tell the direction of miscalibration and relies on arbitrary grouping]
 
 ---
 ### Model calibration with calibration plot
