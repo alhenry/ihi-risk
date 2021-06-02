@@ -13,7 +13,7 @@ model <- glm(formula = dead ~ age + sex + sbp + bmi,
 df_model <- model %>%
   # augment creates new columns with some useful information from the model
   # .fitted = predicted values
-  augment(type.predict = "response") %>%  
+  augment(type.predict = "link") %>%  
   mutate(dead_count = as.numeric(dead) - 1) %>% 
   arrange(.fitted)
 
