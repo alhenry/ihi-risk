@@ -1,6 +1,6 @@
 ---
-title: "Risk Prediction"
-subtitle: "Advanced Statistical Analysis"
+title: "Risk Prediction Modelling"
+subtitle: "Advanced Statistics for Records Research"
 author: "Albert Henry"
 institute: "Institute of Health Informatics"
 output:
@@ -13,9 +13,11 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+      ratio: 16:9
 ---
-class: center, middle, inverse
-background-color: #1f2430
+class: center, middle
+background-color: #EEFAFC
+
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(fig.retina = 3, message = F, warning = F)
@@ -24,37 +26,39 @@ knitr::opts_chunk$set(fig.retina = 3, message = F, warning = F)
 ```{r xaringan-themer, include = FALSE}
 library(xaringanthemer)
 
-accent <- "#0f4c81"
+base <- accent <- "#1261A5"
 white <- "#fafafa"
 black <- "#101010"
 # accent2 <- "#A4DBE8"
-mono_accent(
-  base_color = accent,
-  # secondary_color = accent2,
-  black_color = black,
-  white_color = white,
+style_mono_accent(
+  base_color = base,
+  black_color = "#101010",
+  white_color = "#fafafa",
   header_font_google = google_font("Raleway"),
+  header_color = darken_color(base, strength = 0.2),
   text_font_google   = google_font("Lato"),
   code_font_google   = google_font("Inconsolata"),
   table_row_even_background_color = "#f0f0f0",
   header_font_weight = "bold",
   text_font_size = "24px",
-  link_color = "deeppink"
+  link_color = "#D7263D",
+  colors = c(
+    accent = base,
+    lightblue = "#98DFEA", blue = "blue", blue2  = "#36BDF2", blue3  = "#00F2F5",
+    gray = "lightgray",
+    yellow = "#FFCC66",
+    red   = "red", crimson = "#D7263D",
+    teal = "teal", brown = "brown",
+    orange = "orange",
+    green = "seagreen",
+    violet = "darkorchid",
+    purple = "purple",
+    pink = "deeppink"
+  )
 )
 
 extra_css <- list(
-  ".accent" = list(color = accent),
   ".shadow" = list("text-shadow" = "0 0 10px #000"),
-  ".blue2" = list(color = "#36BDF2"),
-  ".blue3" = list(color = "#00F2F5"),
-  ".gray" = list(color = "lightgray"),
-  ".yellow" = list(color = "#FFCC66"),
-  ".red"   = list(color = "firebrick", opaciy = "1"),
-  ".blue" = list(color = "steelblue", opaciy = "1"),
-  ".orange" = list(color = "orange", opaciy = "1"),
-  ".green" = list(color = "seagreen", opacity = "1"),
-  ".violet" = list(color = "darkorchid", opaciy = "1"),
-  ".pink" = list(color = "deeppink", opaciy = "1"),
   ".large" = list("font-size" = "120%"),
   ".big" = list("font-size" = "400%"),
   ".small" = list("font-size" = "90%"),
@@ -67,58 +71,57 @@ extra_css <- list(
   )
 )
 
-write_extra_css(extra_css)
+style_extra_css(extra_css)
 ```
 
 
-# .yellow[Risk Prediction]
+# Risk Prediction
 
-### .yellow[Advanced Statistical Analysis]
-
-### .yellow[Albert Henry]
+### Advanced Statistics for Records Research
 
 <br/>
+### .black[Albert Henry]
 
-### .yellow[UCL Institute of Health Informatics]
+#### .black[UCL Institute of Health Informatics]
 
-Online slides (CC BY-SA-NC):
+<br/><br/>
+Online slides (CC licence: BY-SA-NC):
 
-.accent[https://ihi-risk-teaching.netlify.app/]
-
+.lightblue[https://ihi-risk-teaching.netlify.app/]
 ---
 ## Learning objectives
 
 This lecture will cover:
 
-- __Deterministic__ and __probabilistic__ methods for prediction
-
+- __Types__ of prediction
 - __2x2 contigency table__
-
-- Measures to evaluate __model performance__ 
-
-- Model validation
+- Metrics to evaluate __model performance__ 
+- Model development and validation
 
 in the context of __binary risk prediction__
 
-## Acknowledgements
+<br/>
+### Acknowledgements
 Materials and data presented are based on previous slides prepared by L. Palla, D. Prieto, and E. Williamson
 
 
 ---
 # Scenario
 
-Consider a dataset consisting some variables collected from a group of individuals. We want to predict which individuals develop a certain __binary event $Y$__ in future.
+Consider a dataset consisting some variables collected from a group of individuals. We want to predict which individuals develop a certain __binary outcome $Y$__.
 
 __Examples__
 
 | Population          | Available data                                                     | Outcome to predict                         |
 |---------------------|--------------------------------------------------------------------|--------------------------------------------|
 | Surgical patients   | age, sex, comorbidities, medications, severity of disease          | complications after surgery                |
-| Covid-19 patients   | age, sex, vaccination status, virus strain, chest X-ray            | ICU admission within 10 days               |
-| Healthy individuals | age, sex, lifestyle, socioeconomic status, genetics, lipid profile | myocardial infarction in 10-year follow-up |
+| Covid-19 patients   | age, sex, vaccination status, virus variant, chest X-ray            | ICU admission within 10 days               |
+| Healthy individuals | body mass index, lifestyle, socioeconomic status, genotypes, lipid profile | myocardial infarction in 10-year follow-up |
+
+*___Note___: prediction modelling is ___not___ limited to biomedical problems  
 
 ---
-### Deterministic vs probabilistic prediction
+### Types of prediction: deterministic vs probabilistic
 
 - __Deterministic:__
 
@@ -137,17 +140,16 @@ __*__Other names: risk prediction model, predictive model, prognostic (or predic
 ]
 
 ---
-### Diagnostic vs Prognostic prediction
+### Types of prediction: diagnostic vs prognostic
 .center[
-![:scale 67%](https://www.acpjournals.org/na101/home/literatum/publisher/acp/journals/content/aim/2015/aim.2015.162.issue-1/m14-0698/20200428/images/large/2ff1_box_a_schematic_representation_of_diagnostic_and_prognostic_prediction_modeling_studies.jpeg)
+![:scale 50%](https://www.acpjournals.org/na101/home/literatum/publisher/acp/journals/content/aim/2015/aim.2015.162.issue-1/m14-0698/20211006/images/medium/2ff1_box_a_schematic_representation_of_diagnostic_and_prognostic_prediction_modeling_studies.jpg)
 
 .smaller[Moons KGM, Altman DG, Reitsma JB, et al. Ann Intern Med. 2015 Jan 6;162(1):W1–73.]
 ]
 
 ---
 ## Example
-__Who will develop myocardial infarction in the next 5 years?__
-
+.large[Who will develop myocardial infarction in the next 5 years?]
 
 ```{r, echo=FALSE, message=F}
 library(tidyverse)
@@ -187,7 +189,7 @@ df %>%
 ---
 ## Deterministic classification
 
-Suppose we have a pre-calculated deterministic classification model `C`:
+Suppose we have a pre-defined deterministic classification model `C`:
 
 `C(age, sex, diabet, SBP) = 0 or 1`
 
@@ -205,7 +207,7 @@ df %>%
 ---
 ## Probabilistic prediction
 
-Suppose we have a pre-calculated probabilistic prediction model `P`:
+Suppose we have a pre-defined probabilistic prediction model `P`:
 
 `P(age, sex, diabet, SBP) = [0, 1]`
 
@@ -329,14 +331,17 @@ tibble(
 ]
 
 <br/>
-With 2 x 2 contigency table, we can calculate several useful metrices* to evaluate model performance, including:
-* sensitivity, recall, hit rate, or true positive rate (TPR)
-* specificity, selectivity or true negative rate (TNR)
-* precision or positive predictive value (PPV)
-* negative predictive value (NPV)
-<br/>
+With 2 x 2 contigency table, we can calculate several useful metrics* to evaluate model performance, including:
+* __sensitivity__, __recall__, __hit / detection rate__, or __true positive rate (TPR)__
+
+* __specificity__, __selectivity__, or __true negative rate (TNR)__
+
+* __precision__ or __positive predictive value (PPV)__
+
+* __negative predictive value (NPV)__
 ]
 
+<br/><br/>
 .smaller[
 *for a full list, refer to [Wikipedia entry for Confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix)
 ]
@@ -344,11 +349,13 @@ With 2 x 2 contigency table, we can calculate several useful metrices* to evalua
 ---
 ## Sensitivity
 
-* a.k.a __True Positive Rate__, __Recall__
+* a.k.a __True Positive Rate__, __Recall__, __Hit / Detection Rate__
 
-* Probability of __correctly predicting the event__
+* Probability of __correctly predicting positive outcome__
 
-* Given you are someone who will __have the event__, what is the probability of a __positive classification__?
+* What is the probability of a __.blue[positive classification]__, given a __.purple[positive outcome]__?
+
+* $P(\color{blue}{\hat{Y} = 1} ~ | ~ \color{purple}{Y = 1}$)
 
 <br/>
 
@@ -383,10 +390,12 @@ $${Sensitivity}=\frac{TP}{TP + FN}$$
 
 * a.k.a __Selectivity__, __True Negative Rate__
 
-* Probability of __correctly predicting the__ ___non-___
-__event__
+* Probability of __correctly predicting ngative outcome__
 
-* Given you are someone who will ___not___ __have the event__, what is the probability of a __negative classification__?
+* What is the probability of a __.teal[negative classification]__, given a __.brown[negative outcome]__?
+
+* $P(\color{teal}{\hat{Y} = 0} ~ | ~ \color{brown}{Y = 0}$)
+
 
 <br/>
 
@@ -414,12 +423,15 @@ $${Specificity}=\frac{TN}{TN + FP}$$
 ---
 ## Positive predictive value (PPV)
 
-* Probability of __having the event__ given a __positive classification__
+* Probability of a __.purple[positive outcome]__ given a __.blue[positive classification]__
 
-* __Positively correlated__ with __disease prevalence__
+* $P(\color{purple}{Y = 1} ~ | ~ \color{blue}{\hat{Y} = 1}$)
 
-<br/><br/><br/>
+* For a given model (e.g. diagnostic test) with fixed sensitivity and specificity, **PPV** is __positively correlated__ with __disease prevalence__
 
+* Intuition: as **prevalence increases**, **true positive increases** while **false positives decreases**
+
+<br/>
 .pull-left[
 ```{r, echo=F}
 
@@ -444,11 +456,15 @@ $${PPV}=\frac{TP}{TP + FP}$$
 ---
 ## Negative predictive value (NPV)
 
-* Probability of ___not___ __having the event__ given a __negative classification__
+* Probability of a __.brown[negative outcome]__ given a __.teal[negative classification]__
 
-* __Negatively correlated__ with __disease prevalence__
+* $P(\color{brown}{Y = 0} ~ | ~ \color{teal}{\hat{Y} = 0}$)
 
-<br/><br/><br/>
+* For a given model (e.g. diagnostic test) with fixed sensitivity and specificity, __NPV__ is __negatively correlated__ with __disease prevalence__
+
+* Intuition: as **prevalence increases**, **true negative decreases** while **false negative increases**
+
+<br/>
 .pull-left[
 ```{r, echo=F}
 
@@ -471,6 +487,8 @@ $${NPV}=\frac{TN}{TN + FN}$$
 ]
 ---
 ### Comparing _classifications_ with observations
+
+Suppose we have the following contigency table for classification model `C`:
 
 ```{r, echo=F}
 
@@ -541,6 +559,8 @@ NPV __= ?__
 ---
 ### Comparing _classifications_ with observations
 
+Suppose we have the following contigency table for classification model `C`:
+
 ```{r, echo=F}
 
 disp_tab(tab)
@@ -568,7 +588,7 @@ NPV __= `r est$NPV`__
 
 .small[
 
-Order by risk and choose a __cut-off point__ to classify as "Yes", e.g.
+For prediction model `P`, we order by predicted probability and choose a __cut-off point__ to classify as "Yes", e.g.
 
 __"Yes" if probability (P) > 0.1__
 
@@ -630,7 +650,7 @@ NPV __= `r est$NPV`__
 
 <br/><br/>
 
-Higher sensitivity, lower specificity than the classification algorithm
+Higher sensitivity, lower specificity than classification model `C`
 ---
 ### Cut-off point: _Yes_ if P > 0.4
 
@@ -669,12 +689,11 @@ PPV __= `r est$PPV`__
 
 NPV __= `r est$NPV`__
 ]
-
 ]
 
 <br/><br/>
 
-Same contigency table as the classification algorithm
+Same contigency table as classification model `C`
 
 ---
 ### Cut-off point: _Yes_ if P > 0.55
@@ -718,7 +737,7 @@ NPV __= `r est$NPV`__
 
 <br/><br/>
 
-Lower sensitivity, higher specificity than the classification algorithm
+Lower sensitivity, higher specificity than classification model `C`
 ---
 ## All cut-off points
 
@@ -756,7 +775,6 @@ df_all %>%
 ---
 ### .small[Receiver Operating Characterictic (ROC) Curve]
 
-
 .small[A curve linking all the sensitivity against the specificity values]
 
 .left-column[
@@ -769,7 +787,7 @@ df_all %>%
 ]
 
 .right-column[
-```{r, echo=F, fig.dim=c(6,4), out.width="100%"}
+```{r, echo=F, fig.dim=c(6,4), out.width="80%"}
 df.plot <- df_all %>% ungroup %>% 
   add_row(Specificity = 0, Sensitivity = 1)
 
@@ -796,7 +814,7 @@ plot
 What is the AUC?
 
 
-```{r, echo=F, fig.dim=c(6,4), out.width="100%"}
+```{r, echo=F, fig.dim=c(6,4), out.width="60%"}
 plot
 ```
 
@@ -861,7 +879,7 @@ $$\widehat{P}\left(Y_{i}=1\right)=\frac{e^{\widehat{\beta}_{0}+\widehat{\beta}_{
 
 #### Internal validation
 
-* The validity of claims for the underlying __population that the data originated from__ __(reproducibility)__
+* The validity of claims for the underlying __population where the data originated from__ __(reproducibility)__
 
 * __Split sample validation__: split dataset randomly into __training__ (for model development) and __test__ set (for validation)
 
@@ -890,11 +908,11 @@ Stata command:
 
 `logistic dead age sex sbp bmi`
 
-```{r, echo=F, out.width="100%"}
+```{r, echo=F, out.width="80%"}
 knitr::include_graphics("figure/stata_logReg.png")
 ```
 
-Note that BMI is not statistically significant (`P = 0.185`) but let's stay with this model for now
+Note that BMI is not statistically significant (`P = 0.185`)
 
 ---
 ### Make predictions from Model _M1_
@@ -907,14 +925,14 @@ Create variable: __predicted probability of death__ - __equation (2)__
 
 `predict m1pr`
 
-```{r, echo=F, out.width="100%"}
+```{r, echo=F, out.width="80%"}
 knitr::include_graphics("figure/stata_logReg_predict.png")
 ```
 
 ---
 #### Predicted probability of death in __`dead`__ and __`alive`__ group
 
-![:scale 90%](figure/stata_boxPlot_1.png)
+![:scale 60%](figure/stata_boxPlot_1.png)
 
 
 ---
@@ -924,27 +942,27 @@ Evaluate __goodness of fit__ with __Hosmer-Lemeshow test__
 
 `estat gof, group(10) table`
 
-![](figure/stata_gof.png)
+![:scale 70%](figure/stata_gof.png)
 
 ---
 ## Model calibration
 
 __Goodness of fit__: Observed and expected events by deciles of risk
 
-.center[![:scale 60%](figure/stata_gof_decile.png)]
+.center[![:scale 50%](figure/stata_gof_decile.png)]
 
 --
-.small[__.red[Limitation:]__ Hosmer-Lemeshow test can not tell the direction of miscalibration and relies on arbitrary grouping]
+.small[__.crimson[Limitation:]__ Hosmer-Lemeshow test can not tell the direction of miscalibration and relies on arbitrary grouping]
 
 ---
 ### Model calibration with calibration plot
 
 .smaller[
-- __Calibration in the large__: compares average predicted risk with observed risk (__0__: ideal, __<0__: underestimation, __>0__: overestimation)
+- __Calibration-in-the-large__: compares average predicted risk with observed risk (__0__: ideal, __<0__: underestimation, __>0__: overestimation)
 
 - __Calibration slope__: evaluate spread of estimated risk (__1__: ideal, __<1__: too extreme, __>1__: too moderate)
 
-.center[![:scale 90%](figure/calibration_plot.png)]
+.center[![:scale 75%](figure/calibration_plot.png)]
 
 Further discussion: [Steyerberg EW, Vergouwe Y (2014)](https://doi.org/10.1093/eurheartj/ehu207) and [Calster BV _et al._ (2019)](https://bmcmedicine.biomedcentral.com/articles/10.1186/s12916-019-1466-7)
 ]
@@ -953,7 +971,7 @@ Further discussion: [Steyerberg EW, Vergouwe Y (2014)](https://doi.org/10.1093/e
 
 `estat classification, cutoff(0.3)`
 
-```{r, echo=F, out.height="100%"}
+```{r, echo=F, out.width="70%"}
 knitr::include_graphics("figure/stata_classify.png")
 ```
 
@@ -961,7 +979,7 @@ knitr::include_graphics("figure/stata_classify.png")
 ### ROC curve from model _M1_
 
 .center[
-![:scale 60%](figure/stata_roc_1.png)
+![:scale 40%](figure/stata_roc_1.png)
 
 __`AUC = 0.78`__
 ]
@@ -972,7 +990,7 @@ was alive by the end of the follow up
 .small[
 ### Sensitivity and Specificity for model _M1_ <br/> by cut-off value
 
-.center[![:scale 65%](figure/stata_sensSpec_1.png)]
+.center[![:scale 45%](figure/stata_sensSpec_1.png)]
 
 Plotting __sensitivity and specificity against cut-off value__ can help to
 select the most appropriate cut-off
@@ -982,15 +1000,15 @@ In practice, this trade-off often needs to be decided on a __case-by-case__ basi
 ]
 
 ---
-#### Key measures to evaluate __model performance__
+### Evaluating prediction model performance
 
 __Calibration__
 * The agreement between the predicted & observed outcomes
-* For a group of patients with 10% predicted risk, do 10% experience the event?
-* e.g. Goodness of fit test
+* For a group of patients with 10% predicted risk, do 10% experience the outcome?
+* e.g. Goodness of fit test, calibration curve
 
 __Discrimination__
-* The ability of the model to distinguish between "event" and "non-event"
+* The ability of the model to distinguish between _positive_ and _negative_ outcome
 * e.g. AUC / C statistic
 
 __Clinical usefulness__
@@ -1013,12 +1031,11 @@ __Clinical usefulness__
 ---
 ## References and further reading
 
-* [Steyerberg EW, Vergouwe Y. Towards better clinical prediction models: seven steps for development and an ABCD for validation. Eur Heart J. 2014 Aug 1;35(29):1925–1931.](https://academic.oup.com/eurheartj/article/35/29/1925/2293109)
+* Textbook: [Steyerberg EW. Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating. Springer, New York, NY; 2009.](https://link.springer.com/book/10.1007/978-0-387-77244-8)
 
-* [Moons KG, Altman DG, Reitsma JB, et al. Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis (TRIPOD): Explanation and Elaboration. Ann Intern Med. 2015;162:W1–W73](https://annals.org/aim/fullarticle/2088542/)
+* Practical article: [Steyerberg EW, Vergouwe Y. Towards better clinical prediction models: seven steps for development and an ABCD for validation. Eur Heart J. 2014 Aug 1;35(29):1925–1931.](https://academic.oup.com/eurheartj/article/35/29/1925/2293109)
 
-* Comparison with machine learning:<br/>[Breiman L. Statistical Modeling: The Two Cultures (with comments and a rejoinder by the author). Stat Sci. Institute of Mathematical Statistics; 2001 Aug;16(3):199–231.](https://projecteuclid.org/euclid.ss/1009213726)
+* Reporting guide: [Moons KG, Altman DG, Reitsma JB, et al. Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis (TRIPOD): Explanation and Elaboration. Ann Intern Med. 2015;162:W1–W73.](https://annals.org/aim/fullarticle/2088542/)
 
-* [ROC curve animation by Dariya Sydykova](https://github.com/dariyasydykova/open_projects/tree/master/ROC_animation)
+* Comparison with machine learning: [Breiman L. Statistical Modeling: The Two Cultures (with comments and a rejoinder by the author). Stat Sci. Institute of Mathematical Statistics; 2001 Aug;16(3):199–231.](https://projecteuclid.org/euclid.ss/1009213726)
 
-* [A Twitter thread on AUC by Cecile Janssens](https://twitter.com/cecilejanssens/status/1104134423673479169?lang=en)

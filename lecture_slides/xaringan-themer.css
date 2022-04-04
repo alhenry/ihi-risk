@@ -15,7 +15,7 @@
  *    - xaringan wiki: https://github.com/yihui/xaringan/wiki
  *    - remarkjs wiki: https://github.com/gnab/remark/wiki
  *
- *  Version: 0.3.0
+ *  Version: 0.4.1
  *
  * ------------------------------------------------------- */
 @import url(https://fonts.googleapis.com/css?family=Lato&display=swap);
@@ -31,6 +31,7 @@
   --text-font-base: sans-serif;
   --header-font-family: Raleway;
   --header-font-is-google: 1;
+  --header-font-family-fallback: Georgia, serif;
   --code-font-family: Inconsolata;
   --code-font-is-google: 1;
   --base-font-size: 20px;
@@ -43,21 +44,38 @@
 
   /* Colors */
   --text-color: #101010;
-  --header-color: #0f4c81;
+  --header-color: #0E4D84;
   --background-color: #fafafa;
-  --link-color: deeppink;
-  --text-bold-color: #0f4c81;
+  --link-color: #D7263D;
+  --text-bold-color: #1261A5;
   --code-highlight-color: rgba(255,255,0,0.5);
   --inverse-text-color: #fafafa;
-  --inverse-background-color: #0f4c81;
+  --inverse-background-color: #1261A5;
   --inverse-header-color: #fafafa;
-  --title-slide-background-color: #0f4c81;
+  --inverse-link-color: #D7263D;
+  --title-slide-background-color: #1261A5;
   --title-slide-text-color: #fafafa;
-  --header-background-color: #0f4c81;
+  --header-background-color: #0E4D84;
   --header-background-text-color: #fafafa;
-  --base: #0f4c81;
+  --base: #1261A5;
   --white: #fafafa;
   --black: #101010;
+  --accent: #1261A5;
+  --lightblue: #98DFEA;
+  --blue: blue;
+  --blue2: #36BDF2;
+  --blue3: #00F2F5;
+  --gray: lightgray;
+  --yellow: #FFCC66;
+  --red: red;
+  --crimson: #D7263D;
+  --teal: teal;
+  --brown: brown;
+  --orange: orange;
+  --green: seagreen;
+  --violet: darkorchid;
+  --purple: purple;
+  --pink: deeppink;
 }
 
 html {
@@ -70,7 +88,7 @@ body {
   color: var(--text-color);
 }
 h1, h2, h3 {
-  font-family: var(--header-font-family);
+  font-family: var(--header-font-family), var(--header-font-family-fallback);
   font-weight: bold;
   color: var(--header-color);
 }
@@ -98,14 +116,17 @@ h1, h2, h3 {
 }
 .remark-inline-code {
   font-size: var(--code-inline-font-size);
-  color: #0f4c81;
+  color: #1261A5;
 }
 .remark-slide-number {
-  color: #0f4c81;
+  color: #1261A5;
   opacity: 1;
-  font-size: 0.9em;
+  font-size: 0.9rem;
 }
-strong { color: var(--text-bold-color); }
+strong {
+  font-weight: bold;
+  color: var(--text-bold-color);
+}
 a, a > code {
   color: var(--link-color);
   text-decoration: none;
@@ -127,6 +148,9 @@ a, a > code {
 .inverse h1, .inverse h2, .inverse h3 {
   color: var(--inverse-header-color);
 }
+.inverse a, .inverse a > code {
+  color: var(--inverse-link-color);
+}
 .title-slide, .title-slide h1, .title-slide h2, .title-slide h3 {
   color: var(--title-slide-text-color);
 }
@@ -143,10 +167,10 @@ a, a > code {
   float: left;
 }
 .left-column h2, .left-column h3 {
-  color: #0f4c8199;
+  color: #1261A599;
 }
 .left-column h2:last-of-type, .left-column h3:last-child {
-  color: #0f4c81;
+  color: #1261A5;
 }
 .right-column {
   width: 75%;
@@ -161,14 +185,14 @@ a, a > code {
   float: right;
   width: 47%;
 }
-.pull-right ~ * {
+.pull-right + * {
   clear: both;
 }
 img, video, iframe {
   max-width: 100%;
 }
 blockquote {
-  border-left: solid 5px #0f4c8180;
+  border-left: solid 5px #1261A580;
   padding-left: 1em;
 }
 .remark-slide table {
@@ -203,6 +227,36 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 }
 .dataTables_wrapper .dataTables_paginate .paginate_button {
   color: var(--text-color) !important;
+}
+
+/* Horizontal alignment of code blocks */
+.remark-slide-content.left pre,
+.remark-slide-content.center pre,
+.remark-slide-content.right pre {
+  text-align: start;
+  width: max-content;
+  max-width: 100%;
+}
+.remark-slide-content.left pre,
+.remark-slide-content.right pre {
+  min-width: 50%;
+  min-width: min(40ch, 100%);
+}
+.remark-slide-content.center pre {
+  min-width: 66%;
+  min-width: min(50ch, 100%);
+}
+.remark-slide-content.left pre {
+  margin-left: unset;
+  margin-right: auto;
+}
+.remark-slide-content.center pre {
+  margin-left: auto;
+  margin-right: auto;
+}
+.remark-slide-content.right pre {
+  margin-left: auto;
+  margin-right: unset;
 }
 
 /* Slide Header Background for h1 elements */
@@ -251,51 +305,108 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 .bg-black {
   background-color: var(--black);
 }
+.accent {
+  color: var(--accent);
+}
+.bg-accent {
+  background-color: var(--accent);
+}
+.lightblue {
+  color: var(--lightblue);
+}
+.bg-lightblue {
+  background-color: var(--lightblue);
+}
+.blue {
+  color: var(--blue);
+}
+.bg-blue {
+  background-color: var(--blue);
+}
+.blue2 {
+  color: var(--blue2);
+}
+.bg-blue2 {
+  background-color: var(--blue2);
+}
+.blue3 {
+  color: var(--blue3);
+}
+.bg-blue3 {
+  background-color: var(--blue3);
+}
+.gray {
+  color: var(--gray);
+}
+.bg-gray {
+  background-color: var(--gray);
+}
+.yellow {
+  color: var(--yellow);
+}
+.bg-yellow {
+  background-color: var(--yellow);
+}
+.red {
+  color: var(--red);
+}
+.bg-red {
+  background-color: var(--red);
+}
+.crimson {
+  color: var(--crimson);
+}
+.bg-crimson {
+  background-color: var(--crimson);
+}
+.teal {
+  color: var(--teal);
+}
+.bg-teal {
+  background-color: var(--teal);
+}
+.brown {
+  color: var(--brown);
+}
+.bg-brown {
+  background-color: var(--brown);
+}
+.orange {
+  color: var(--orange);
+}
+.bg-orange {
+  background-color: var(--orange);
+}
+.green {
+  color: var(--green);
+}
+.bg-green {
+  background-color: var(--green);
+}
+.violet {
+  color: var(--violet);
+}
+.bg-violet {
+  background-color: var(--violet);
+}
+.purple {
+  color: var(--purple);
+}
+.bg-purple {
+  background-color: var(--purple);
+}
+.pink {
+  color: var(--pink);
+}
+.bg-pink {
+  background-color: var(--pink);
+}
 
 
 
 /* Extra CSS */
-.accent {
-  color: #0f4c81;
-}
 .shadow {
   text-shadow: 0 0 10px #000;
-}
-.blue2 {
-  color: #36BDF2;
-}
-.blue3 {
-  color: #00F2F5;
-}
-.gray {
-  color: lightgray;
-}
-.yellow {
-  color: #FFCC66;
-}
-.red {
-  color: firebrick;
-  opaciy: 1;
-}
-.blue {
-  color: steelblue;
-  opaciy: 1;
-}
-.orange {
-  color: orange;
-  opaciy: 1;
-}
-.green {
-  color: seagreen;
-  opacity: 1;
-}
-.violet {
-  color: darkorchid;
-  opaciy: 1;
-}
-.pink {
-  color: deeppink;
-  opaciy: 1;
 }
 .large {
   font-size: 120%;
