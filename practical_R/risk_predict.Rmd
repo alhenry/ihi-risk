@@ -18,8 +18,11 @@ characteristics.
 
 ## Objectives
 By the end of this practical, you should be able to:
+
 1. Fit a logistic model to create risk predictions.
+
 2. Assess model discrimination by calculating the Area Under the Curve.
+
 3. Assess model calibration by graphing observed and predicted risks.
 
 ## Dataset and analysis
