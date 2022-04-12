@@ -317,8 +317,8 @@ tibble(
 tab <- with(df, table(Classify, Observed))
 tibble(
   Predicted = c("+", "-"),
-  `+` = c("True Positive", "False Positive"),
-  `-` =  c("False Negative", "Ture Negative")
+  `+` = c("True Positive", "False Negative"),
+  `-` =  c("False Positive", "True Negative")
   ) %>% 
   kable(align = "c") %>%
   kable_styling() %>% 
