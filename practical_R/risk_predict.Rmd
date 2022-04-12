@@ -1,6 +1,6 @@
 ---
 title: "Practical: RISK PREDICTION"
-subtitle: "Advanced Statistical Analysis"
+subtitle: "Advanced Statistics for Records Research"
 output: pdf_document
 ---
 
@@ -49,8 +49,11 @@ load("../data/data_predict.rda")
 ```
 
 ## Data exploration
-Have a look at the data. How many participants die? What proportion are female?
-What ages are these participants?
+
+Have a look at the data, then try answering the following participants:
+* How many participants died at the end of the follow-up?
+* What is the proportion of female participants?
+* What is the mean, standard deviation, minimum, and maximum age of these participants?
 
 ```{r data}
 # Base R
@@ -245,3 +248,72 @@ tidy_gof %>%
         axis.title = element_blank())
 
 ```
+
+### Calibration curve
+
+```{r, fig.dim = c(6,4)}
+df_model <- model %>%
+  # augment creates new columns with some useful information from the model
+  # .fitted = predicted values
+  augment(type.predict = "link", newdata = data_test) %>%  
+  mutate(dead_count = as.numeric(dead) - 1) %>% 
+  arrange(.fitted)
+
+# calculate alpha (calibration at large) & beta (calibration slope)
+# alpha is calculated by constraining beta to 1
+
+df_alpha <- glm(dead_count ~ offset(.fitted),
+               data = df_model,
+               family = binomial) %>% 
+  tidy(conf.int = TRUE)
+
+alpha_text <- paste0(round(df_alpha$estimate[1], 2),
+                     " (95% CI: ", round(df_alpha$conf.low[1], 2),
+                     " to ", round(df_alpha$conf.high[1], 2),
+                     ")")
+
+# beta is calculated by constraining alpha to 0
+df_beta <- glm(dead_count ~ .fitted - 1,
+                data = df_model,
+                family = binomial) %>% 
+  tidy(conf.int = TRUE)
+
+beta_text <- paste0(round(df_beta$estimate[1], 2),
+                    " (95% CI: ", round(df_beta$conf.low[1], 2),
+                    " to ", round(df_beta$conf.high[1], 2),
+                    ")")
+
+
+# calculate mean predicted results per decile
+df_sum_decile <- model %>%
+  # augment creates new columns with some useful information from the model
+  # .fitted = predicted values
+  augment(type.predict = "response", newdata = data_test) %>%  
+  mutate(dead_count = as.numeric(dead) - 1) %>% 
+  arrange(.fitted) %>% 
+  mutate(decile = ntile(.fitted, 10)) %>% 
+  group_by(decile) %>% 
+  summarize(mean_prediction = mean(.fitted), 
+            sd_prediction = sd(.fitted),
+            prop_observed = mean(dead_count)) %>% 
+  mutate(dummy = "decile")
+
+# plotting
+ggplot(df_sum_decile, aes(x = mean_prediction, y = prop_observed)) +
+  theme_minimal() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  # geom_abline(slope = 1, intercept = df_alpha$estimate[1], color = "#1b5299") +
+  geom_point(aes(color = dummy), size = 3) +
+  scale_color_manual(values = "steelblue") +
+  labs(x = "Mean Predicted", y = "Mean Observed", title = "Calibration plot") +
+  annotate("label", x = -Inf, y = Inf, hjust = 0, vjust = 1.5, label.size = 0,
+           label = paste("calibration-in-the-large =",
+                         alpha_text)) +
+  annotate("label", x = -Inf, y = Inf, hjust = 0, vjust = 2.5, label.size = 0,
+           label = paste("calibration slope =",
+                         beta_text)) +
+  theme(legend.title = element_blank())
+
+```
+
+Since calibration-in-the-large is close to 0, and calibration slope is close to 1, we can say that the model is well calibrated
