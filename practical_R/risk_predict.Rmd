@@ -1,6 +1,6 @@
 ---
 title: "Practical: RISK PREDICTION"
-subtitle: "Advanced Statistics for Records Research"
+subtitle: "Advanced Statistical Analysis"
 output: pdf_document
 ---
 
