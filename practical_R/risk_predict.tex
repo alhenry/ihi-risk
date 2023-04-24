@@ -1,0 +1,663 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Practical: RISK PREDICTION},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Practical: RISK PREDICTION}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Advanced Statistics for Records Research}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\hypertarget{research-question}{%
+\subsection{Research question}\label{research-question}}
+
+In this session, we will explore the dataset of 2000 participants we met
+in the lecture, and fit a risk prediction model for death within 5
+years, based on some simple patient characteristics.
+
+\hypertarget{objectives}{%
+\subsection{Objectives}\label{objectives}}
+
+By the end of this practical, you should be able to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Fit a logistic model to create risk predictions.
+\item
+  Assess model discrimination by calculating the Area Under the Curve.
+\item
+  Assess model calibration by graphing observed and predicted risks.
+\end{enumerate}
+
+\hypertarget{dataset-and-analysis}{%
+\subsection{Dataset and analysis}\label{dataset-and-analysis}}
+
+For this practical we will use a (simulated) dataset called
+\texttt{data\_predict}. This contains data for 2,000 patients, with
+information on six variables.
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule()
+Variable & Description \\
+\midrule()
+\endhead
+id & Unique patient ID \\
+age & Age (years) \\
+sbp & Systolic Blood Pressure (mm/Hg) \\
+bmi & Body Max Index \(kg/m^2\) \\
+sex & Female / Male \\
+dead & Alive / Dead \\
+\bottomrule()
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Install Libraries}
+\ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\FunctionTok{require}\NormalTok{(pacman)) }\FunctionTok{install.packages}\NormalTok{(}\StringTok{"pacman"}\NormalTok{)}
+\CommentTok{\#\textgreater{} Loading required package: pacman}
+\NormalTok{pacman}\SpecialCharTok{::}\FunctionTok{p\_load}\NormalTok{(tidyr, dplyr, ggplot2, broom, here, gtsummary)}
+
+\CommentTok{\# Load data}
+\FunctionTok{load}\NormalTok{(here}\SpecialCharTok{::}\FunctionTok{here}\NormalTok{(}\StringTok{"data/data\_predict.rda"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{data-exploration}{%
+\subsection{Data exploration}\label{data-exploration}}
+
+Have a look at the data, then try answering the following participants:
+* How many participants died at the end of the follow-up? * What is the
+proportion of female participants? * What is the mean, standard
+deviation, minimum, and maximum age of these participants?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Base R}
+\FunctionTok{summary}\NormalTok{(data\_predict)}
+\CommentTok{\#\textgreater{}        id              age             sbp             bmi            sex      }
+\CommentTok{\#\textgreater{}  Min.   :   1.0   Min.   :40.00   Min.   : 76.6   Min.   :15.50   Female: 978  }
+\CommentTok{\#\textgreater{}  1st Qu.: 500.8   1st Qu.:51.00   1st Qu.:113.7   1st Qu.:23.20   Male  :1022  }
+\CommentTok{\#\textgreater{}  Median :1000.5   Median :60.00   Median :120.6   Median :25.10                }
+\CommentTok{\#\textgreater{}  Mean   :1000.5   Mean   :60.45   Mean   :120.3   Mean   :25.19                }
+\CommentTok{\#\textgreater{}  3rd Qu.:1500.2   3rd Qu.:70.00   3rd Qu.:127.2   3rd Qu.:27.20                }
+\CommentTok{\#\textgreater{}  Max.   :2000.0   Max.   :80.00   Max.   :152.2   Max.   :35.60                }
+\CommentTok{\#\textgreater{}     dead     }
+\CommentTok{\#\textgreater{}  Alive:1491  }
+\CommentTok{\#\textgreater{}  Dead : 509  }
+\CommentTok{\#\textgreater{}              }
+\CommentTok{\#\textgreater{}              }
+\CommentTok{\#\textgreater{}              }
+\CommentTok{\#\textgreater{} }
+
+\CommentTok{\# Tidyverse (More verbose but more control)}
+\NormalTok{data\_predict }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(dead) }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  tally }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{percent =}\NormalTok{ n}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(n)}\SpecialCharTok{*}\DecValTok{100}\NormalTok{)}
+\CommentTok{\#\textgreater{} \# A tibble: 2 x 3}
+\CommentTok{\#\textgreater{}   dead      n percent}
+\CommentTok{\#\textgreater{}   \textless{}fct\textgreater{} \textless{}int\textgreater{}   \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{} 1 Alive  1491    74.6}
+\CommentTok{\#\textgreater{} 2 Dead    509    25.4}
+
+\NormalTok{data\_predict }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(sex) }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  tally }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{percent =}\NormalTok{ n}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(n)}\SpecialCharTok{*}\DecValTok{100}\NormalTok{)}
+\CommentTok{\#\textgreater{} \# A tibble: 2 x 3}
+\CommentTok{\#\textgreater{}   sex        n percent}
+\CommentTok{\#\textgreater{}   \textless{}fct\textgreater{}  \textless{}int\textgreater{}   \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{} 1 Female   978    48.9}
+\CommentTok{\#\textgreater{} 2 Male    1022    51.1}
+
+\NormalTok{data\_predict }\SpecialCharTok{\%\textgreater{}\%} 
+  \CommentTok{\# filter out missing observation at any variable}
+  \FunctionTok{filter\_all}\NormalTok{(}\FunctionTok{all\_vars}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(.))) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =} \FunctionTok{n}\NormalTok{(),}
+            \AttributeTok{mean =} \FunctionTok{mean}\NormalTok{(age),}
+            \AttributeTok{sd =} \FunctionTok{sd}\NormalTok{(age),}
+            \AttributeTok{min =} \FunctionTok{min}\NormalTok{(age),}
+            \AttributeTok{max =} \FunctionTok{max}\NormalTok{(age))}
+\CommentTok{\#\textgreater{} \# A tibble: 1 x 5}
+\CommentTok{\#\textgreater{}       n  mean    sd   min   max}
+\CommentTok{\#\textgreater{}   \textless{}int\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{} 1  2000  60.5  11.5    40    80}
+
+\CommentTok{\# or with gtsummary }
+\CommentTok{\# https://www.danieldsjoberg.com/gtsummary/index.html}
+\FunctionTok{tbl\_summary}\NormalTok{(data\_predict)}
+\CommentTok{\#\textgreater{} Table printed with \textasciigrave{}knitr::kable()\textasciigrave{}, not \{gt\}. Learn why at}
+\CommentTok{\#\textgreater{} https://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html}
+\CommentTok{\#\textgreater{} To suppress this message, include \textasciigrave{}message = FALSE\textasciigrave{} in code chunk header.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lc@{}}
+\toprule()
+\textbf{Characteristic} & \textbf{N = 2,000} \\
+\midrule()
+\endhead
+id & 1,000 (501, 1,500) \\
+age & 60 (51, 70) \\
+sbp & 121 (114, 127) \\
+bmi & 25.10 (23.20, 27.20) \\
+sex & \\
+Female & 978 (49\%) \\
+Male & 1,022 (51\%) \\
+event & \\
+Alive & 1,491 (75\%) \\
+Dead & 509 (25\%) \\
+\bottomrule()
+\end{longtable}
+
+About 25\% of the 2,000 individuals die -- this is a high-risk
+population. There is roughly 50\% males and 50\% females, aged 40-80.
+
+\hypertarget{randomly-split-data-into-training-and-test-sets}{%
+\subsubsection{Randomly split data into training and test
+sets}\label{randomly-split-data-into-training-and-test-sets}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{777}\NormalTok{)}
+
+\NormalTok{n\_total }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(data\_predict)}
+\NormalTok{proportion\_train }\OtherTok{\textless{}{-}} \FloatTok{0.5}
+\NormalTok{n\_train }\OtherTok{\textless{}{-}} \FunctionTok{floor}\NormalTok{(proportion\_train }\SpecialCharTok{*}\NormalTok{ n\_total)}
+
+\NormalTok{sample\_train }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{n\_total, n\_train) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ sort}
+\NormalTok{sample\_test }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(}\SpecialCharTok{!}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{n\_total }\SpecialCharTok{\%in\%}\NormalTok{ sample\_train))}
+
+\NormalTok{data\_train }\OtherTok{\textless{}{-}}\NormalTok{ data\_predict[sample\_train,]}
+\NormalTok{data\_test }\OtherTok{\textless{}{-}}\NormalTok{ data\_predict[sample\_test,]}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{fit-model-in-training-data}{%
+\subsubsection{Fit model in training
+data}\label{fit-model-in-training-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Fit logistic regression}
+\NormalTok{model }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(}\AttributeTok{formula =}\NormalTok{ dead }\SpecialCharTok{\textasciitilde{}}\NormalTok{ age }\SpecialCharTok{+}\NormalTok{ sex }\SpecialCharTok{+}\NormalTok{ sbp }\SpecialCharTok{+}\NormalTok{ bmi,}
+             \AttributeTok{family =} \StringTok{"binomial"}\NormalTok{,}
+             \AttributeTok{data =}\NormalTok{ data\_train)}
+
+\CommentTok{\# View model output summary}
+\FunctionTok{summary}\NormalTok{(model)}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} Call:}
+\CommentTok{\#\textgreater{} glm(formula = dead \textasciitilde{} age + sex + sbp + bmi, family = "binomial", }
+\CommentTok{\#\textgreater{}     data = data\_train)}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} Deviance Residuals: }
+\CommentTok{\#\textgreater{}     Min       1Q   Median       3Q      Max  }
+\CommentTok{\#\textgreater{} {-}1.9187  {-}0.7526  {-}0.4669   0.6399   2.7754  }
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} Coefficients:}
+\CommentTok{\#\textgreater{}               Estimate Std. Error z value Pr(\textgreater{}|z|)    }
+\CommentTok{\#\textgreater{} (Intercept) {-}13.297927   1.440507  {-}9.231  \textless{} 2e{-}16 ***}
+\CommentTok{\#\textgreater{} age           0.086203   0.007921  10.883  \textless{} 2e{-}16 ***}
+\CommentTok{\#\textgreater{} sexMale       0.155126   0.160836   0.965    0.335    }
+\CommentTok{\#\textgreater{} sbp           0.052679   0.008465   6.223 4.87e{-}10 ***}
+\CommentTok{\#\textgreater{} bmi           0.013306   0.027782   0.479    0.632    }
+\CommentTok{\#\textgreater{} {-}{-}{-}}
+\CommentTok{\#\textgreater{} Signif. codes:  0 \textquotesingle{}***\textquotesingle{} 0.001 \textquotesingle{}**\textquotesingle{} 0.01 \textquotesingle{}*\textquotesingle{} 0.05 \textquotesingle{}.\textquotesingle{} 0.1 \textquotesingle{} \textquotesingle{} 1}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} (Dispersion parameter for binomial family taken to be 1)}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{}     Null deviance: 1126.86  on 999  degrees of freedom}
+\CommentTok{\#\textgreater{} Residual deviance:  950.39  on 995  degrees of freedom}
+\CommentTok{\#\textgreater{} AIC: 960.39}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} Number of Fisher Scoring iterations: 5}
+
+\CommentTok{\# Get odds ratio and 95\% CI}
+\FunctionTok{cbind}\NormalTok{(}\AttributeTok{OR =} \FunctionTok{coef}\NormalTok{(model), }\FunctionTok{confint}\NormalTok{(model)) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ exp}
+\CommentTok{\#\textgreater{} Waiting for profiling to be done...}
+\CommentTok{\#\textgreater{}                       OR        2.5 \%       97.5 \%}
+\CommentTok{\#\textgreater{} (Intercept) 1.677968e{-}06 9.341761e{-}08 2.662586e{-}05}
+\CommentTok{\#\textgreater{} age         1.090028e+00 1.073596e+00 1.107490e+00}
+\CommentTok{\#\textgreater{} sexMale     1.167805e+00 8.524485e{-}01 1.602203e+00}
+\CommentTok{\#\textgreater{} sbp         1.054091e+00 1.037001e+00 1.072023e+00}
+\CommentTok{\#\textgreater{} bmi         1.013395e+00 9.596049e{-}01 1.070147e+00}
+
+\CommentTok{\# tidy method}
+\FunctionTok{tidy}\NormalTok{(model)}
+\CommentTok{\#\textgreater{} \# A tibble: 5 x 5}
+\CommentTok{\#\textgreater{}   term        estimate std.error statistic  p.value}
+\CommentTok{\#\textgreater{}   \textless{}chr\textgreater{}          \textless{}dbl\textgreater{}     \textless{}dbl\textgreater{}     \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{} 1 (Intercept) {-}13.3      1.44       {-}9.23  2.67e{-}20}
+\CommentTok{\#\textgreater{} 2 age           0.0862   0.00792    10.9   1.39e{-}27}
+\CommentTok{\#\textgreater{} 3 sexMale       0.155    0.161       0.965 3.35e{-} 1}
+\CommentTok{\#\textgreater{} 4 sbp           0.0527   0.00846     6.22  4.87e{-}10}
+\CommentTok{\#\textgreater{} 5 bmi           0.0133   0.0278      0.479 6.32e{-} 1}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{predict-risk-based-on-trained-model}{%
+\subsubsection{Predict risk based on trained
+model}\label{predict-risk-based-on-trained-model}}
+
+\hypertarget{on-training-dataset}{%
+\paragraph{On training dataset}\label{on-training-dataset}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# update data\_train and data\_test with predicted probabilites}
+\NormalTok{data\_train}\SpecialCharTok{$}\NormalTok{prob\_dead }\OtherTok{\textless{}{-}} 
+  \FunctionTok{predict}\NormalTok{(model, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{)}
+
+\CommentTok{\# compare predicted risk }
+\NormalTok{data\_train }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(dead) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =} \FunctionTok{n}\NormalTok{ (),}
+            \AttributeTok{mean =} \FunctionTok{mean}\NormalTok{(prob\_dead),}
+            \AttributeTok{sd =} \FunctionTok{sd}\NormalTok{(prob\_dead),}
+            \AttributeTok{min =} \FunctionTok{min}\NormalTok{(prob\_dead),}
+            \AttributeTok{max =} \FunctionTok{max}\NormalTok{(prob\_dead)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{pivot\_longer}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{dead) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{id\_cols =}\NormalTok{ name, }\AttributeTok{names\_from =}\NormalTok{ dead)}
+\CommentTok{\#\textgreater{} \# A tibble: 5 x 3}
+\CommentTok{\#\textgreater{}   name     Alive     Dead}
+\CommentTok{\#\textgreater{}   \textless{}chr\textgreater{}    \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{} 1 n     749      251     }
+\CommentTok{\#\textgreater{} 2 mean    0.207    0.383 }
+\CommentTok{\#\textgreater{} 3 sd      0.155    0.189 }
+\CommentTok{\#\textgreater{} 4 min     0.0134   0.0213}
+\CommentTok{\#\textgreater{} 5 max     0.841    0.820}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{on-test-dataset}{%
+\paragraph{On test dataset}\label{on-test-dataset}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data\_test}\SpecialCharTok{$}\NormalTok{prob\_dead }\OtherTok{\textless{}{-}}
+  \FunctionTok{predict}\NormalTok{(model, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{, }\AttributeTok{newdata =}\NormalTok{ data\_test)}
+
+\NormalTok{data\_test }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(dead) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =} \FunctionTok{n}\NormalTok{ (),}
+            \AttributeTok{mean =} \FunctionTok{mean}\NormalTok{(prob\_dead),}
+            \AttributeTok{sd =} \FunctionTok{sd}\NormalTok{(prob\_dead),}
+            \AttributeTok{min =} \FunctionTok{min}\NormalTok{(prob\_dead),}
+            \AttributeTok{max =} \FunctionTok{max}\NormalTok{(prob\_dead)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{pivot\_longer}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{dead) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{id\_cols =}\NormalTok{ name, }\AttributeTok{names\_from =}\NormalTok{ dead)}
+\CommentTok{\#\textgreater{} \# A tibble: 5 x 3}
+\CommentTok{\#\textgreater{}   name     Alive     Dead}
+\CommentTok{\#\textgreater{}   \textless{}chr\textgreater{}    \textless{}dbl\textgreater{}    \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{} 1 n     742      258     }
+\CommentTok{\#\textgreater{} 2 mean    0.212    0.406 }
+\CommentTok{\#\textgreater{} 3 sd      0.160    0.192 }
+\CommentTok{\#\textgreater{} 4 min     0.0149   0.0256}
+\CommentTok{\#\textgreater{} 5 max     0.850    0.844}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Alternative solution (with broom::augment() )}
+\NormalTok{alt\_data\_train }\OtherTok{\textless{}{-}}\NormalTok{ model }\SpecialCharTok{\%\textgreater{}\%}
+  \CommentTok{\# augment creates new columns with some useful information from the model}
+  \CommentTok{\# .fitted = predicted values}
+  \FunctionTok{augment}\NormalTok{(}\AttributeTok{type.predict =} \StringTok{"response"}\NormalTok{)}
+
+\NormalTok{alt\_data\_test }\OtherTok{\textless{}{-}}\NormalTok{ model }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{augment}\NormalTok{(}\AttributeTok{type.predict =} \StringTok{"response"}\NormalTok{, }\AttributeTok{newdata =}\NormalTok{ data\_test)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{validation}{%
+\subsubsection{Validation}\label{validation}}
+
+\hypertarget{roc}{%
+\paragraph{ROC}\label{roc}}
+
+In the training dataset, the ROC is 79\%. This means that a person who
+did die has a 79\% probability of having a higher predicted risk (of
+dying) than someone who did not. This shows the model has fairly good
+discrimination (ability to separate those who did and did not experience
+the event of interest).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pacman}\SpecialCharTok{::}\FunctionTok{p\_load}\NormalTok{(yardstick)}
+
+\CommentTok{\# combine dataset}
+\NormalTok{data\_grouped }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(data\_train }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{set =} \StringTok{"Training"}\NormalTok{),}
+\NormalTok{                      data\_test }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{set =} \StringTok{"Validation"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(set)}
+
+\CommentTok{\# Calculate ROC}
+\NormalTok{data\_grouped }\SpecialCharTok{\%\textgreater{}\%} 
+  \CommentTok{\# set the second level of factor variable as the event (i.e. dead)}
+  \FunctionTok{roc\_auc}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ dead, prob\_dead, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{)}
+\CommentTok{\#\textgreater{} \# A tibble: 2 x 4}
+\CommentTok{\#\textgreater{}   set        .metric .estimator .estimate}
+\CommentTok{\#\textgreater{}   \textless{}chr\textgreater{}      \textless{}chr\textgreater{}   \textless{}chr\textgreater{}          \textless{}dbl\textgreater{}}
+\CommentTok{\#\textgreater{} 1 Training   roc\_auc binary         0.767}
+\CommentTok{\#\textgreater{} 2 Validation roc\_auc binary         0.783}
+
+\CommentTok{\# Visualise ROC}
+\NormalTok{data\_roc }\OtherTok{\textless{}{-}}\NormalTok{ data\_grouped }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{roc\_curve}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ dead, prob\_dead, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(data\_roc, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \DecValTok{1}\SpecialCharTok{{-}}\NormalTok{specificity, }\AttributeTok{y =}\NormalTok{ sensitivity, }\AttributeTok{color =}\NormalTok{ set)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{slope =} \DecValTok{1}\NormalTok{, }\AttributeTok{intercept =} \DecValTok{0}\NormalTok{,}
+              \AttributeTok{size =} \FloatTok{0.4}\NormalTok{, }\AttributeTok{color =} \StringTok{"grey21"}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{(}\AttributeTok{base\_size =} \DecValTok{12}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{coord\_equal}\NormalTok{()}
+\CommentTok{\#\textgreater{} Warning: Using \textasciigrave{}size\textasciigrave{} aesthetic for lines was deprecated in ggplot2 3.4.0.}
+\CommentTok{\#\textgreater{} i Please use \textasciigrave{}linewidth\textasciigrave{} instead.}
+\CommentTok{\#\textgreater{} This warning is displayed once every 8 hours.}
+\CommentTok{\#\textgreater{} Call \textasciigrave{}lifecycle::last\_lifecycle\_warnings()\textasciigrave{} to see where this warning was}
+\CommentTok{\#\textgreater{} generated.}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{risk_predict_files/figure-latex/roc-1.pdf}
+
+\hypertarget{hosmer-lemeshow}{%
+\paragraph{Hosmer-Lemeshow}\label{hosmer-lemeshow}}
+
+The Hosmer-Lemeshow goodness of fit table for the two (S=0 and the S=1)
+datasets were very similar. Both showed evidence of a well calibrated
+model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pacman}\SpecialCharTok{::}\FunctionTok{p\_load}\NormalTok{(generalhoslem)}
+
+\NormalTok{gof }\OtherTok{\textless{}{-}}\NormalTok{ data\_grouped }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_map}\NormalTok{( }\SpecialCharTok{\textasciitilde{}} \FunctionTok{logitgof}\NormalTok{(}
+    \AttributeTok{obs =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{dead,}
+    \AttributeTok{exp =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{prob\_dead,}
+    \AttributeTok{g =} \DecValTok{10}
+\NormalTok{  ))}
+
+\CommentTok{\# Fix name}
+\FunctionTok{names}\NormalTok{(gof) }\OtherTok{\textless{}{-}} \FunctionTok{group\_keys}\NormalTok{(data\_grouped)[[}\FunctionTok{group\_vars}\NormalTok{(data\_grouped)]]}
+
+\CommentTok{\# output Goodness of Fit metrics}
+\NormalTok{gof}
+\CommentTok{\#\textgreater{} $Training}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{}  Hosmer and Lemeshow test (binary model)}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} data:  .$dead, .$prob\_dead}
+\CommentTok{\#\textgreater{} X{-}squared = 8.105, df = 8, p{-}value = 0.4233}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} $Validation}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{}  Hosmer and Lemeshow test (binary model)}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} data:  .$dead, .$prob\_dead}
+\CommentTok{\#\textgreater{} X{-}squared = 4.7631, df = 8, p{-}value = 0.7826}
+
+\CommentTok{\# create GoF table}
+\NormalTok{gof\_table }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(gof, }\ControlFlowTok{function}\NormalTok{(x)\{}
+  \FunctionTok{cbind}\NormalTok{(x}\SpecialCharTok{$}\NormalTok{observed, x}\SpecialCharTok{$}\NormalTok{expected) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{as\_tibble}\NormalTok{(}\AttributeTok{rownames =} \StringTok{"threshold"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+    \FunctionTok{mutate}\NormalTok{(}\AttributeTok{group =} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(.))}
+\NormalTok{\})}
+
+\NormalTok{gof\_table}\SpecialCharTok{$}\NormalTok{Training}
+\CommentTok{\#\textgreater{} \# A tibble: 10 x 6}
+\CommentTok{\#\textgreater{}    threshold          y0    y1 yhat0 yhat1 group}
+\CommentTok{\#\textgreater{}    \textless{}chr\textgreater{}           \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}int\textgreater{}}
+\CommentTok{\#\textgreater{}  1 [0.0134,0.0541]    94     6  96.2  3.79     1}
+\CommentTok{\#\textgreater{}  2 (0.0541,0.085]     94     6  92.9  7.09     2}
+\CommentTok{\#\textgreater{}  3 (0.085,0.115]      92     8  90.0 10.0      3}
+\CommentTok{\#\textgreater{}  4 (0.115,0.153]      86    14  86.8 13.2      4}
+\CommentTok{\#\textgreater{}  5 (0.153,0.204]      77    23  82.4 17.6      5}
+\CommentTok{\#\textgreater{}  6 (0.204,0.267]      84    16  76.3 23.7      6}
+\CommentTok{\#\textgreater{}  7 (0.267,0.337]      68    32  69.8 30.2      7}
+\CommentTok{\#\textgreater{}  8 (0.337,0.415]      65    35  62.9 37.1      8}
+\CommentTok{\#\textgreater{}  9 (0.415,0.522]      50    50  53.4 46.6      9}
+\CommentTok{\#\textgreater{} 10 (0.522,0.841]      39    61  38.2 61.8     10}
+\NormalTok{gof\_table}\SpecialCharTok{$}\NormalTok{Validation}
+\CommentTok{\#\textgreater{} \# A tibble: 10 x 6}
+\CommentTok{\#\textgreater{}    threshold          y0    y1 yhat0 yhat1 group}
+\CommentTok{\#\textgreater{}    \textless{}chr\textgreater{}           \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}dbl\textgreater{} \textless{}int\textgreater{}}
+\CommentTok{\#\textgreater{}  1 [0.0149,0.0582]    95     5  95.9  4.12     1}
+\CommentTok{\#\textgreater{}  2 (0.0582,0.0897]    94     6  92.6  7.43     2}
+\CommentTok{\#\textgreater{}  3 (0.0897,0.121]     90    10  89.5 10.5      3}
+\CommentTok{\#\textgreater{}  4 (0.121,0.161]      88    12  86.0 14.0      4}
+\CommentTok{\#\textgreater{}  5 (0.161,0.208]      84    16  81.6 18.4      5}
+\CommentTok{\#\textgreater{}  6 (0.208,0.274]      74    26  76.2 23.8      6}
+\CommentTok{\#\textgreater{}  7 (0.274,0.35]       75    25  69.0 31.0      7}
+\CommentTok{\#\textgreater{}  8 (0.35,0.437]       62    38  60.3 39.7      8}
+\CommentTok{\#\textgreater{}  9 (0.437,0.547]      50    50  50.9 49.1      9}
+\CommentTok{\#\textgreater{} 10 (0.547,0.85]       30    70  35.8 64.2     10}
+\end{Highlighting}
+\end{Shaded}
+
+Bar graphs comparing the predicted and observed risks in the S=0 and S=1
+datasets also show good calibration (in both the training and validation
+data).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# tidy up gof\_table for plotting}
+\NormalTok{tidy\_gof }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(gof\_table, }\AttributeTok{.id =} \StringTok{"set"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(set, group, }\AttributeTok{Obs =}\NormalTok{ y1, }\AttributeTok{Exp =}\NormalTok{ yhat1) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{pivot\_longer}\NormalTok{(}
+    \AttributeTok{cols =} \FunctionTok{c}\NormalTok{(Obs, Exp),}
+    \AttributeTok{names\_to =} \StringTok{"class"}
+\NormalTok{  )}
+
+\CommentTok{\# plotting}
+\NormalTok{tidy\_gof }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ group, }\AttributeTok{y =}\NormalTok{ value, }\AttributeTok{fill =}\NormalTok{ class)) }\SpecialCharTok{+}
+  \FunctionTok{facet\_grid}\NormalTok{(}\AttributeTok{cols =} \FunctionTok{vars}\NormalTok{(set)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \FunctionTok{position\_dodge}\NormalTok{()) }\SpecialCharTok{+}
+  \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{breaks =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.grid.minor.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+        \AttributeTok{panel.grid.major.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+        \AttributeTok{axis.title =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{risk_predict_files/figure-latex/gof_bar-1.pdf}
+
+\hypertarget{calibration-curve}{%
+\subsubsection{Calibration curve}\label{calibration-curve}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_model }\OtherTok{\textless{}{-}}\NormalTok{ model }\SpecialCharTok{\%\textgreater{}\%}
+  \CommentTok{\# augment creates new columns with some useful information from the model}
+  \CommentTok{\# .fitted = predicted values}
+  \FunctionTok{augment}\NormalTok{(}\AttributeTok{type.predict =} \StringTok{"link"}\NormalTok{, }\AttributeTok{newdata =}\NormalTok{ data\_test) }\SpecialCharTok{\%\textgreater{}\%}  
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{dead\_count =} \FunctionTok{as.numeric}\NormalTok{(dead) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{arrange}\NormalTok{(.fitted)}
+
+\CommentTok{\# calculate alpha (calibration at large) \& beta (calibration slope)}
+\CommentTok{\# alpha is calculated by constraining beta to 1}
+
+\NormalTok{df\_alpha }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(dead\_count }\SpecialCharTok{\textasciitilde{}} \FunctionTok{offset}\NormalTok{(.fitted),}
+               \AttributeTok{data =}\NormalTok{ df\_model,}
+               \AttributeTok{family =}\NormalTok{ binomial) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{tidy}\NormalTok{(}\AttributeTok{conf.int =} \ConstantTok{TRUE}\NormalTok{)}
+
+\NormalTok{alpha\_text }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\FunctionTok{round}\NormalTok{(df\_alpha}\SpecialCharTok{$}\NormalTok{estimate[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{),}
+                     \StringTok{" (95\% CI: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(df\_alpha}\SpecialCharTok{$}\NormalTok{conf.low[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{),}
+                     \StringTok{" to "}\NormalTok{, }\FunctionTok{round}\NormalTok{(df\_alpha}\SpecialCharTok{$}\NormalTok{conf.high[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{),}
+                     \StringTok{")"}\NormalTok{)}
+
+\CommentTok{\# beta is calculated by constraining alpha to 0}
+\NormalTok{df\_beta }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(dead\_count }\SpecialCharTok{\textasciitilde{}}\NormalTok{ .fitted }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{,}
+                \AttributeTok{data =}\NormalTok{ df\_model,}
+                \AttributeTok{family =}\NormalTok{ binomial) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{tidy}\NormalTok{(}\AttributeTok{conf.int =} \ConstantTok{TRUE}\NormalTok{)}
+
+\NormalTok{beta\_text }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\FunctionTok{round}\NormalTok{(df\_beta}\SpecialCharTok{$}\NormalTok{estimate[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{),}
+                    \StringTok{" (95\% CI: "}\NormalTok{, }\FunctionTok{round}\NormalTok{(df\_beta}\SpecialCharTok{$}\NormalTok{conf.low[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{),}
+                    \StringTok{" to "}\NormalTok{, }\FunctionTok{round}\NormalTok{(df\_beta}\SpecialCharTok{$}\NormalTok{conf.high[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{),}
+                    \StringTok{")"}\NormalTok{)}
+
+
+\CommentTok{\# calculate mean predicted results per decile}
+\NormalTok{df\_sum\_decile }\OtherTok{\textless{}{-}}\NormalTok{ model }\SpecialCharTok{\%\textgreater{}\%}
+  \CommentTok{\# augment creates new columns with some useful information from the model}
+  \CommentTok{\# .fitted = predicted values}
+  \FunctionTok{augment}\NormalTok{(}\AttributeTok{type.predict =} \StringTok{"response"}\NormalTok{, }\AttributeTok{newdata =}\NormalTok{ data\_test) }\SpecialCharTok{\%\textgreater{}\%}  
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{dead\_count =} \FunctionTok{as.numeric}\NormalTok{(dead) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{arrange}\NormalTok{(.fitted) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{decile =} \FunctionTok{ntile}\NormalTok{(.fitted, }\DecValTok{10}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(decile) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{mean\_prediction =} \FunctionTok{mean}\NormalTok{(.fitted), }
+            \AttributeTok{sd\_prediction =} \FunctionTok{sd}\NormalTok{(.fitted),}
+            \AttributeTok{prop\_observed =} \FunctionTok{mean}\NormalTok{(dead\_count)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{dummy =} \StringTok{"decile"}\NormalTok{)}
+
+\CommentTok{\# plotting}
+\FunctionTok{ggplot}\NormalTok{(df\_sum\_decile, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ mean\_prediction, }\AttributeTok{y =}\NormalTok{ prop\_observed)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{slope =} \DecValTok{1}\NormalTok{, }\AttributeTok{intercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{) }\SpecialCharTok{+}
+  \CommentTok{\# geom\_abline(slope = 1, intercept = df\_alpha$estimate[1], color = "\#1b5299") +}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ dummy), }\AttributeTok{size =} \DecValTok{3}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \StringTok{"steelblue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Mean Predicted"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Mean Observed"}\NormalTok{, }\AttributeTok{title =} \StringTok{"Calibration plot"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{annotate}\NormalTok{(}\StringTok{"label"}\NormalTok{, }\AttributeTok{x =} \SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{, }\AttributeTok{y =} \ConstantTok{Inf}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{vjust =} \FloatTok{1.5}\NormalTok{, }\AttributeTok{label.size =} \DecValTok{0}\NormalTok{,}
+           \AttributeTok{label =} \FunctionTok{paste}\NormalTok{(}\StringTok{"calibration{-}in{-}the{-}large ="}\NormalTok{,}
+\NormalTok{                         alpha\_text)) }\SpecialCharTok{+}
+  \FunctionTok{annotate}\NormalTok{(}\StringTok{"label"}\NormalTok{, }\AttributeTok{x =} \SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{, }\AttributeTok{y =} \ConstantTok{Inf}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{vjust =} \FloatTok{2.5}\NormalTok{, }\AttributeTok{label.size =} \DecValTok{0}\NormalTok{,}
+           \AttributeTok{label =} \FunctionTok{paste}\NormalTok{(}\StringTok{"calibration slope ="}\NormalTok{,}
+\NormalTok{                         beta\_text)) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{risk_predict_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+Since calibration-in-the-large is close to 0, and calibration slope is
+close to 1, we can say that the model is well calibrated
+
+\end{document}
