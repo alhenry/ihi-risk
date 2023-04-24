@@ -11,49 +11,46 @@ knitr::opts_chunk$set(
 )
 
 ```
+
 ## Research question
-In this session, we will explore the dataset of 2000 participants we met in the lecture, and fit
-a risk prediction model for death within 5 years, based on some simple patient
-characteristics.
+
+In this session, we will explore the dataset of 2000 participants we met in the lecture, and fit a risk prediction model for death within 5 years, based on some simple patient characteristics.
 
 ## Objectives
+
 By the end of this practical, you should be able to:
 
-1. Fit a logistic model to create risk predictions.
+1.  Fit a logistic model to create risk predictions.
 
-2. Assess model discrimination by calculating the Area Under the Curve.
+2.  Assess model discrimination by calculating the Area Under the Curve.
 
-3. Assess model calibration by graphing observed and predicted risks.
+3.  Assess model calibration by graphing observed and predicted risks.
 
 ## Dataset and analysis
-For this practical we will use a (simulated) dataset called `data_predict`. This contains
-data for 2,000 patients, with information on six variables.
 
-| Variable | Description             |
-|----------|-------------------------|
-| id       | Unique patient ID       |
-| age      | Age (years)             |
-| sbp      | Systolic Blood Pressure |
-| bmi      | Body Max Index $kg/m^2$ |
-| sex      | Female / Male           |
-| dead     | Alive / Dead            |
+For this practical we will use a (simulated) dataset called `data_predict`. This contains data for 2,000 patients, with information on six variables.
 
+| Variable | Description                     |
+|----------|---------------------------------|
+| id       | Unique patient ID               |
+| age      | Age (years)                     |
+| sbp      | Systolic Blood Pressure (mm/Hg) |
+| bmi      | Body Max Index $kg/m^2$         |
+| sex      | Female / Male                   |
+| dead     | Alive / Dead                    |
 
 ```{r setup}
 # Install Libraries
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyr, dplyr, ggplot2, broom)
+pacman::p_load(tidyr, dplyr, ggplot2, broom, here, gtsummary)
 
 # Load data
-load("../data/data_predict.rda")
+load(here::here("data/data_predict.rda"))
 ```
 
 ## Data exploration
 
-Have a look at the data, then try answering the following participants:
-* How many participants died at the end of the follow-up?
-* What is the proportion of female participants?
-* What is the mean, standard deviation, minimum, and maximum age of these participants?
+Have a look at the data, then try answering the following participants: \* How many participants died at the end of the follow-up? \* What is the proportion of female participants? \* What is the mean, standard deviation, minimum, and maximum age of these participants?
 
 ```{r data}
 # Base R
@@ -78,10 +75,17 @@ data_predict %>%
             sd = sd(age),
             min = min(age),
             max = max(age))
+
+# or with gtsummary 
+# https://www.danieldsjoberg.com/gtsummary/index.html
+tbl_summary(data_predict)
+
 ```
-About 25% of the 2,000 individuals die – this is a high-risk population. There is roughly 50% males and 50% females, aged 40-80.
+
+About 25% of the 2,000 individuals die -- this is a high-risk population. There is roughly 50% males and 50% females, aged 40-80.
 
 ### Randomly split data into training and test sets
+
 ```{r partition}
 set.seed(777)
 
@@ -97,6 +101,7 @@ data_test <- data_predict[sample_test,]
 ```
 
 ### Fit model in training data
+
 ```{r fit_model}
 # Fit logistic regression
 model <- glm(formula = dead ~ age + sex + sbp + bmi,
@@ -109,11 +114,14 @@ summary(model)
 # Get odds ratio and 95% CI
 cbind(OR = coef(model), confint(model)) %>% exp
 
-
+# tidy method
+tidy(model)
 ```
 
 ### Predict risk based on trained model
+
 #### On training dataset
+
 ```{r predict_in_train}
 # update data_train and data_test with predicted probabilites
 data_train$prob_dead <- 
@@ -133,6 +141,7 @@ data_train %>%
 ```
 
 #### On test dataset
+
 ```{r predict_in_test}
 data_test$prob_dead <-
   predict(model, type = "response", newdata = data_test)
@@ -159,19 +168,15 @@ alt_data_test <- model %>%
   augment(type.predict = "response", newdata = data_test)
 
 ```
+
 ### Validation
 
 #### ROC
-In the training dataset, the ROC is 79%.
-This means that a person who did die has a 79% probability of having a higher predicted risk (of dying) than someone who did not.
-This shows the model has fairly good discrimination (ability to separate those who did and did not experience the event of interest).
+
+In the training dataset, the ROC is 79%. This means that a person who did die has a 79% probability of having a higher predicted risk (of dying) than someone who did not. This shows the model has fairly good discrimination (ability to separate those who did and did not experience the event of interest).
 
 ```{r roc}
 pacman::p_load(yardstick)
-
-# set the second level of factor variable as the event (i.e. dead)
-options(yardstick.event_first = FALSE)
-
 
 # combine dataset
 data_grouped <- bind_rows(data_train %>% mutate(set = "Training"),
@@ -180,23 +185,25 @@ data_grouped <- bind_rows(data_train %>% mutate(set = "Training"),
 
 # Calculate ROC
 data_grouped %>% 
-  roc_auc(truth = dead, prob_dead)
+  # set the second level of factor variable as the event (i.e. dead)
+  roc_auc(truth = dead, prob_dead, event_level = "second")
 
 # Visualise ROC
 data_roc <- data_grouped %>% 
-  roc_curve(truth = dead, prob_dead)
+  roc_curve(truth = dead, prob_dead, event_level = "second")
 
-ggplot(data_roc, aes(x = specificity, y = sensitivity, color = set)) +
-  geom_abline(slope = -1, intercept = 1,
+ggplot(data_roc, aes(x = 1-specificity, y = sensitivity, color = set)) +
+  geom_abline(slope = 1, intercept = 0,
               size = 0.4, color = "grey21", linetype = "dashed") +
   geom_line() +
-  theme_minimal() 
+  theme_minimal(base_size = 12) +
+  coord_equal()
   
 ```
 
 #### Hosmer-Lemeshow
-The Hosmer-Lemeshow goodness of fit table for the two (S=0 and the S=1) datasets
-were very similar. Both showed evidence of a well calibrated model.
+
+The Hosmer-Lemeshow goodness of fit table for the two (S=0 and the S=1) datasets were very similar. Both showed evidence of a well calibrated model.
 
 ```{r gof}
 pacman::p_load(generalhoslem)
@@ -225,8 +232,8 @@ gof_table$Training
 gof_table$Validation
 ```
 
-Bar graphs comparing the predicted and observed risks in the S=0 and S=1 datasets
-also show good calibration (in both the training and validation data).
+Bar graphs comparing the predicted and observed risks in the S=0 and S=1 datasets also show good calibration (in both the training and validation data).
+
 ```{r gof_bar}
 # tidy up gof_table for plotting
 tidy_gof <- bind_rows(gof_table, .id = "set") %>%
